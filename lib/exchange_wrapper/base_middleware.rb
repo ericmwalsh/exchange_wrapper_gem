@@ -1,3 +1,4 @@
+# ::ExchangeWrapper::BaseMiddleware
 module ExchangeWrapper
   # Public: Instruments requests using Active Support.
   #

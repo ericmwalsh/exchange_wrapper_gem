@@ -1,3 +1,4 @@
+# ::Exceptions
 module Exceptions
   BAD_REQUEST = 400
   RATE_LIMIT = 429
@@ -14,12 +15,6 @@ module Exceptions
     end
 
     private
-
-    def ar_error_messages(record) # hash
-      record.map do |field, errors|
-        "#{field.upcase} - #{errors.join(',')}"
-      end.join('; ')
-    end
 
     # {"code"=>-2014, "msg"=>"API-key format invalid."}
     def binance_error_message(error_hash) # hash
