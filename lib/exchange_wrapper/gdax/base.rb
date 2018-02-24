@@ -35,17 +35,17 @@ module ExchangeWrapper
         end
 
         def disable_requests
-          Rails.cache.fetch('gdax-requests-disabled', expires_in: 3.minutes) do
+          ::Rails.cache.fetch('gdax-requests-disabled', expires_in: 3.minutes) do
             true
           end
         end
 
         def enable_requests
-          Rails.cache.delete('gdax-requests-disabled')
+          ::Rails.cache.delete('gdax-requests-disabled')
         end
 
         def requests_disabled?
-          Rails.cache.read('gdax-requests-disabled').present?
+          ::Rails.cache.read('gdax-requests-disabled').present?
         end
 
         def client(key, secret, passphrase)

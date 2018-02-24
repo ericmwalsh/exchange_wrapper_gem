@@ -1,10 +1,19 @@
+require 'faraday'
+require 'faraday_middleware'
+
+require_relative 'account_api'
+require_relative 'public_api'
+require_relative 'signature_middleware'
+require_relative 'timestamp_middleware'
+require_relative 'utils'
+require_relative 'withdraw_api'
 # ::ExchangeWrapper::Binance::Base
 # https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
 module ExchangeWrapper
   module Binance
     class Base
       BASE_URL = 'https://api.binance.com' # ENV['BINANCE_URI']
-      DEFAULT_ADAPTER = Faraday.default_adapter
+      DEFAULT_ADAPTER = ::Faraday.default_adapter
 
       class << self
 
@@ -79,21 +88,29 @@ module ExchangeWrapper
         end
 
         def disable_requests
-          Rails.cache.fetch('binance-requests-disabled', expires_in: 3.minutes) do
-            true
+          if defined?(::Rails)
+            ::Rails.cache.fetch('binance-requests-disabled', expires_in: 3.minutes) do
+              true
+            end
           end
         end
 
         def enable_requests
-          Rails.cache.delete('binance-requests-disabled')
+          if defined?(::Rails)
+            ::Rails.cache.delete('binance-requests-disabled')
+          end
         end
 
         def requests_disabled?
-          Rails.cache.read('binance-requests-disabled').present?
+          if defined?(::Rails)
+            ::Rails.cache.read('binance-requests-disabled').present?
+          else
+            false
+          end
         end
 
         def public_client(adapter = DEFAULT_ADAPTER)
-          Faraday.new(url: "#{BASE_URL}/api") do |conn|
+          ::Faraday.new(url: "#{BASE_URL}/api") do |conn|
             conn.request :json
             conn.response :json, content_type: /\bjson$/
             conn.adapter adapter
@@ -101,7 +118,7 @@ module ExchangeWrapper
         end
 
         def signed_client(api_key, secret_key, adapter = DEFAULT_ADAPTER)
-          Faraday.new(url: "#{BASE_URL}/api") do |conn|
+          ::Faraday.new(url: "#{BASE_URL}/api") do |conn|
             conn.request :json
             conn.response :json, content_type: /\bjson$/
             conn.headers['X-MBX-APIKEY'] = api_key
@@ -112,7 +129,7 @@ module ExchangeWrapper
         end
 
         def verified_client(api_key, adapter = DEFAULT_ADAPTER)
-          Faraday.new(url: "#{BASE_URL}/api") do |conn|
+          ::Faraday.new(url: "#{BASE_URL}/api") do |conn|
             conn.response :json, content_type: /\bjson$/
             conn.headers['X-MBX-APIKEY'] = api_key
             conn.adapter adapter
@@ -120,7 +137,7 @@ module ExchangeWrapper
         end
 
         def withdraw_client(api_key, secret_key, adapter = DEFAULT_ADAPTER)
-          Faraday.new(url: "#{BASE_URL}/wapi") do |conn|
+          ::Faraday.new(url: "#{BASE_URL}/wapi") do |conn|
             conn.request :url_encoded
             conn.response :json, content_type: /\bjson$/
             conn.headers['X-MBX-APIKEY'] = api_key

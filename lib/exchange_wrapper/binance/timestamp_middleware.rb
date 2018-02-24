@@ -1,3 +1,4 @@
+require_relative "../base_middleware"
 # ::ExchangeWrapper::Binance::TimestampMiddleware
 module ExchangeWrapper
   module Binance

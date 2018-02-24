@@ -3,7 +3,7 @@ module ExchangeWrapper
   module Bittrex
     class Base
       BASE_URL = 'https://bittrex.com/api/v1.1' # ENV['BITTREX_URI']
-      DEFAULT_ADAPTER = Faraday.default_adapter
+      DEFAULT_ADAPTER = ::Faraday.default_adapter
 
       class << self
 
@@ -70,21 +70,21 @@ module ExchangeWrapper
         end
 
         def disable_requests
-          Rails.cache.fetch('bittrex-requests-disabled', expires_in: 3.minutes) do
+          ::Rails.cache.fetch('bittrex-requests-disabled', expires_in: 3.minutes) do
             true
           end
         end
 
         def enable_requests
-          Rails.cache.delete('bittrex-requests-disabled')
+          ::Rails.cache.delete('bittrex-requests-disabled')
         end
 
         def requests_disabled?
-          Rails.cache.read('bittrex-requests-disabled').present?
+          ::Rails.cache.read('bittrex-requests-disabled').present?
         end
 
         def public_client(adapter = DEFAULT_ADAPTER)
-          Faraday.new(url: "#{BASE_URL}") do |conn|
+          ::Faraday.new(url: "#{BASE_URL}") do |conn|
             conn.request :json
             conn.response :json, content_type: /\bjson$/
             conn.adapter adapter
@@ -92,7 +92,7 @@ module ExchangeWrapper
         end
 
         def signed_client(api_key, secret_key, adapter = DEFAULT_ADAPTER)
-          Faraday.new(url: "#{BASE_URL}") do |conn|
+          ::Faraday.new(url: "#{BASE_URL}") do |conn|
             conn.request :url_encoded
             conn.response :json, content_type: /\bjson$/
             conn.use ::ExchangeWrapper::Bittrex::QueryMiddleware, api_key

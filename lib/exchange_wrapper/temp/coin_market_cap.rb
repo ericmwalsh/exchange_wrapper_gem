@@ -16,7 +16,7 @@ module ExchangeWrapper
         def refresh(params = {})
           parsed_response = refresh_request('/ticker', params.merge(limit: 0))
           symbols = parsed_response.map {|currency| currency['symbol']}
-          Rails.cache.write(
+          ::Rails.cache.write(
             'symbols',
             symbols
           ) && symbols

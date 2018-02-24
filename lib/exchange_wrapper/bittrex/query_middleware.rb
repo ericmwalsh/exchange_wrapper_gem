@@ -1,3 +1,4 @@
+require_relative "../base_middleware"
 # ::ExchangeWrapper::Bittrex::QueryMiddleware
 module ExchangeWrapper
   module Bittrex

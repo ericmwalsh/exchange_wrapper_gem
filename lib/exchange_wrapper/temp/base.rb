@@ -1,9 +1,10 @@
+require 'httparty'
 # ::ExchangeWrapper::Temp::Base
 module ExchangeWrapper
   module Temp
     class Base
 
-      include HTTParty
+      include ::HTTParty
       # base_uri ENV['EXAMPLE_BASE_URI']
 
       class << self
@@ -18,14 +19,14 @@ module ExchangeWrapper
           }
         ).parsed_response
 
-        Rails.cache.write(
+        ::Rails.cache.write(
             "#{base_uri}#{uri} #{params.to_json}",
             parsed_response
           ) && parsed_response
         end
 
         def request(uri, params = {}, expires_in = 1.hour)
-          Rails.cache.fetch("#{base_uri}#{uri} #{params.to_json}", expires_in: expires_in) do
+          ::Rails.cache.fetch("#{base_uri}#{uri} #{params.to_json}", expires_in: expires_in) do
             get(
               uri,
               {
@@ -36,7 +37,7 @@ module ExchangeWrapper
         end
 
         def delete_key(uri, params = {})
-          Rails.cache.delete("#{base_uri}#{uri} #{params.to_json}")
+          ::Rails.cache.delete("#{base_uri}#{uri} #{params.to_json}")
         end
 
       end

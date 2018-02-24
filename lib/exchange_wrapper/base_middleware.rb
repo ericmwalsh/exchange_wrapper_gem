@@ -11,7 +11,7 @@ module ExchangeWrapper
   #     duration = ends - starts
   #     $stderr.puts '[%s] %s %s (%.3f s)' % [url.host, http_method, url.request_uri, duration]
   #   end
-  class BaseMiddleware < Faraday::Middleware
+  class BaseMiddleware < ::Faraday::Middleware
 
     def call(env)
       raise ::NotImplementedError, 'implement this in your subclass'
@@ -27,7 +27,7 @@ module ExchangeWrapper
     def add_query_param(query, key, value)
       query = query.to_s
       query << '&' unless query.empty?
-      query << "#{Faraday::Utils.escape key}=#{Faraday::Utils.escape value}"
+      query << "#{::Faraday::Utils.escape key}=#{::Faraday::Utils.escape value}"
     end
 
   end

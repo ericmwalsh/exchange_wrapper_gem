@@ -34,17 +34,17 @@ module ExchangeWrapper
         end
 
         def disable_requests
-          Rails.cache.fetch('coinbase-requests-disabled', expires_in: 3.minutes) do
+          ::Rails.cache.fetch('coinbase-requests-disabled', expires_in: 3.minutes) do
             true
           end
         end
 
         def enable_requests
-          Rails.cache.delete('coinbase-requests-disabled')
+          ::Rails.cache.delete('coinbase-requests-disabled')
         end
 
         def requests_disabled?
-          Rails.cache.read('coinbase-requests-disabled').present?
+          ::Rails.cache.read('coinbase-requests-disabled').present?
         end
 
         # defines a `send` method so must use reserved `__send__` instead
