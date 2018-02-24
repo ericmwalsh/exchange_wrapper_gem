@@ -7,11 +7,12 @@ Gem::Specification.new do |spec|
   spec.name          = "exchange_wrapper"
   spec.version       = ExchangeWrapper::VERSION
   spec.authors       = ["Eric Walsh"]
-  spec.email         = ["ericmatthewwalsh@gmail.com"]
+  spec.email         = ["eric@chalupa.io"]
 
   spec.summary       = %q{Standardized wrapper around the different cryptocurrency exchanges.}
-  spec.description   = %q{Creates a wrapper around the account parsing functions and the exchange price functions for usage in Carnitas and Carne Asada.}
-  spec.homepage      = "https://github.com/ericmwalsh/exchange_wrapper"
+  spec.description   = %q{Creates a wrapper around the account parsing functions and the exchange price functions for usage in Carnitas and Carne Asada (APIs).}
+  spec.homepage      = "https://github.com/ChalupaIO/exchange_wrapper"
+  spec.license       = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
@@ -39,5 +40,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "byebug"
+  spec.add_development_dependency "byebug" "~> 10"
 end
