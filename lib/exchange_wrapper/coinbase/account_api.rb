@@ -1,12 +1,16 @@
 # ::ExchangeWrapper::Coinbase::AccountApi
 module ExchangeWrapper
   module Coinbase
-    class AccountApi < ::ExchangeWrapper::Coinbase::Base
+    class AccountApi
 
       class << self
 
         def accounts(key, secret)
-          request(key, secret, :accounts)
+          ::ExchangeWrapper::Coinbase::Base.request(
+            key,
+            secret,
+            :accounts
+          )
         end
 
       end

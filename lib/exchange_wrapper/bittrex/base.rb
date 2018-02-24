@@ -1,3 +1,11 @@
+require 'faraday'
+require 'faraday_middleware'
+
+require_relative 'account_api'
+require_relative 'public_api'
+require_relative 'query_middleware'
+require_relative 'signature_middleware'
+require_relative 'utils'
 # ::ExchangeWrapper::Bittrex::Base
 module ExchangeWrapper
   module Bittrex
@@ -70,17 +78,25 @@ module ExchangeWrapper
         end
 
         def disable_requests
-          ::Rails.cache.fetch('bittrex-requests-disabled', expires_in: 3.minutes) do
-            true
+          if defined?(::Rails)
+            ::Rails.cache.fetch('bittrex-requests-disabled', expires_in: 3.minutes) do
+              true
+            end
           end
         end
 
         def enable_requests
-          ::Rails.cache.delete('bittrex-requests-disabled')
+          if defined?(::Rails)
+            ::Rails.cache.delete('bittrex-requests-disabled')
+          end
         end
 
         def requests_disabled?
-          ::Rails.cache.read('bittrex-requests-disabled').present?
+          if defined?(::Rails)
+            ::Rails.cache.read('bittrex-requests-disabled').present?
+          else
+            false
+          end
         end
 
         def public_client(adapter = DEFAULT_ADAPTER)

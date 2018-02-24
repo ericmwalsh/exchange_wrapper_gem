@@ -12,21 +12,34 @@ module ExchangeWrapper
         private
 
         def refresh_request(uri, params = {})
-        parsed_response = get(
-          uri,
-          {
-            query: params
-          }
-        ).parsed_response
+          parsed_response = get(
+            uri,
+            {
+              query: params
+            }
+          ).parsed_response
 
-        ::Rails.cache.write(
-            "#{base_uri}#{uri} #{params.to_json}",
+          if defined?(::Rails)
+            ::Rails.cache.write(
+              "#{base_uri}#{uri} #{params.to_json}",
+              parsed_response
+            ) && parsed_response
+          else
             parsed_response
-          ) && parsed_response
+          end
         end
 
-        def request(uri, params = {}, expires_in = 1.hour)
-          ::Rails.cache.fetch("#{base_uri}#{uri} #{params.to_json}", expires_in: expires_in) do
+        def request(uri, params = {}, expires_in = 3600) # 1.hour)
+          if defined?(::Rails)
+            ::Rails.cache.fetch("#{base_uri}#{uri} #{params.to_json}", expires_in: expires_in) do
+              get(
+                uri,
+                {
+                  query: params
+                }
+              ).parsed_response
+            end
+          else
             get(
               uri,
               {
@@ -37,10 +50,16 @@ module ExchangeWrapper
         end
 
         def delete_key(uri, params = {})
-          ::Rails.cache.delete("#{base_uri}#{uri} #{params.to_json}")
+          if defined?(::Rails)
+            ::Rails.cache.delete("#{base_uri}#{uri} #{params.to_json}")
+          end
         end
 
       end
     end
   end
 end
+# trick to allow correct loading
+# base class needs to be loaded before these classes bc they inherit from base
+require_relative 'coin_market_cap'
+require_relative 'crypto_compare'

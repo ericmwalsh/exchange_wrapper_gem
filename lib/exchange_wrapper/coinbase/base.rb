@@ -1,11 +1,13 @@
+require 'coinbase/wallet'
+
+require_relative 'account_api'
+require_relative 'utils'
 # ::ExchangeWrapper::Coinbase::Base
 module ExchangeWrapper
   module Coinbase
     class Base
 
       class << self
-
-        private
 
         def request(key, secret, method, args = {})
           if requests_disabled?
@@ -34,17 +36,25 @@ module ExchangeWrapper
         end
 
         def disable_requests
-          ::Rails.cache.fetch('coinbase-requests-disabled', expires_in: 3.minutes) do
-            true
+          if defined?(::Rails)
+            ::Rails.cache.fetch('coinbase-requests-disabled', expires_in: 3.minutes) do
+              true
+            end
           end
         end
 
         def enable_requests
-          ::Rails.cache.delete('coinbase-requests-disabled')
+          if defined?(::Rails)
+            ::Rails.cache.delete('coinbase-requests-disabled')
+          end
         end
 
         def requests_disabled?
-          ::Rails.cache.read('coinbase-requests-disabled').present?
+          if defined?(::Rails)
+            ::Rails.cache.read('coinbase-requests-disabled').present?
+          else
+            false
+          end
         end
 
         # defines a `send` method so must use reserved `__send__` instead

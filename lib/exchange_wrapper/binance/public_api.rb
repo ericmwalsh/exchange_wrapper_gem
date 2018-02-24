@@ -70,17 +70,6 @@ module ExchangeWrapper
           )
         end
 
-        def date_to_timestamp(date)
-          if date.is_a?(Date)
-            date.to_datetime
-          elsif date.is_a?(String)
-            DateTime.parse(date)
-          # elsif date.is_a?(DateTime)
-          else
-            date
-          end.strftime('%Q')
-        end
-
       end
     end
   end
