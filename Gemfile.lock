@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    exchange_wrapper (0.1.0)
+    exchange_wrapper (0.1.1)
       coinbase (~> 4.2)
       coinbase-exchange (~> 0.2)
       faraday (~> 0.14)
@@ -67,7 +67,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.16)
-  byebug
+  byebug (~> 10)
   exchange_wrapper!
   rake (~> 10.0)
   rspec (~> 3.0)
