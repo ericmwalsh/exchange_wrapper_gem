@@ -28,10 +28,16 @@ module ExchangeWrapper
         end
 
         # MARKET DATA
-        def day_pricing
+        def day_pricing(symbol = nil)
           request(
             :get,
-            'v1/ticker/24hr'
+            'v1/ticker/24hr',
+            (
+              symbol.nil? ? {} :
+              {
+                symbol: symbol
+              }
+            )
           )
         end
 
