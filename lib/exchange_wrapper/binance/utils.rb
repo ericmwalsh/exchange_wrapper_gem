@@ -27,15 +27,29 @@ module ExchangeWrapper
 
           ::ExchangeWrapper::Binance::PublicApi.exchange_info['symbols'].each do |symbol|
             next if symbol['symbol'] == '123456' # skip dummy symbol data
-            symbols['currencies'] << symbol['baseAsset']
-            symbols['currencies'] << symbol['quoteAsset']
-            symbols['trading_pairs'] << symbol['symbol']
+            base_asset = symbol['baseAsset']
+            quote_asset = symbol['quoteAsset']
+            symbols['currencies'] << base_asset
+            symbols['currencies'] << quote_asset
+
+            symbols['trading_pairs'] << [
+              symbol['symbol'],
+              base_asset,
+              quote_asset
+            ]
           end
 
           symbols['currencies'].sort!.uniq!
-          symbols['trading_pairs'].sort!.uniq!
+          # sort by symbol
+          symbols['trading_pairs'].sort! {|tp_0, tp_1| tp_0[0] <=> tp_1[0]}
 
           symbols
+        end
+
+        def prices
+          ::ExchangeWrapper::Binance::PublicApi.prices.sort do |tp_0, tp_1|
+            tp_0['symbol'] <=> tp_1['symbol']
+          end[1..-1] # skip dummy trading pair, it is at index 0 after the sort
         end
 
       end

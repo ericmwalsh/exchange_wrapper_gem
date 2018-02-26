@@ -41,6 +41,19 @@ module ExchangeWrapper
           )
         end
 
+        def prices(symbol = nil)
+          request(
+            :get,
+            'v3/ticker/price',
+            (
+              symbol.nil? ? {} :
+              {
+                symbol: symbol
+              }
+            )
+          )
+        end
+
         def trades(symbol, limit = 500)
           request(
             :get,
