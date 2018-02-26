@@ -47,9 +47,13 @@ module ExchangeWrapper
         end
 
         def prices
-          ::ExchangeWrapper::Binance::PublicApi.prices.sort do |tp_0, tp_1|
+          prices = ::ExchangeWrapper::Binance::PublicApi.prices.sort do |tp_0, tp_1|
             tp_0['symbol'] <=> tp_1['symbol']
-          end[1..-1] # skip dummy trading pair, it is at index 0 after the sort
+          end
+          # remove dummy trading pair
+          prices.delete_at(prices.index {|tp| tp['symbol'] == '123456'} || prices.length)
+
+          prices
         end
 
       end
