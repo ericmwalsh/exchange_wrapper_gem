@@ -20,30 +20,36 @@ module ExchangeWrapper
         end
 
         def symbols
-          symbols = {
-            'currencies' => [],
-            'trading_pairs' => []
-          }
+          symbols = []
 
           ::ExchangeWrapper::Binance::PublicApi.exchange_info['symbols'].each do |symbol|
             next if symbol['symbol'] == '123456' # skip dummy symbol data
-            base_asset = symbol['baseAsset']
-            quote_asset = symbol['quoteAsset']
-            symbols['currencies'] << base_asset
-            symbols['currencies'] << quote_asset
 
-            symbols['trading_pairs'] << [
-              symbol['symbol'],
-              base_asset,
-              quote_asset
-            ]
+            symbols << symbol['baseAsset']
+            symbols << symbol['quoteAsset']
           end
 
-          symbols['currencies'].sort!.uniq!
-          # sort by symbol
-          symbols['trading_pairs'].sort! {|tp_0, tp_1| tp_0[0] <=> tp_1[0]}
+          symbols.sort!.uniq!
 
           symbols
+        end
+
+        def trading_pairs
+          trading_pairs = []
+
+          ::ExchangeWrapper::Binance::PublicApi.exchange_info['symbols'].each do |symbol|
+            next if symbol['symbol'] == '123456' # skip dummy symbol data
+
+            trading_pairs << [
+              symbol['symbol'],
+              symbol['baseAsset'],
+              symbol['quoteAsset']
+            ]
+          end
+          # sort by symbol
+          trading_pairs.sort! {|tp_0, tp_1| tp_0[0] <=> tp_1[0]}
+
+          trading_pairs
         end
 
         def prices
