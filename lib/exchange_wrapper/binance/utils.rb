@@ -41,7 +41,7 @@ module ExchangeWrapper
             next if symbol['symbol'] == '123456' # skip dummy symbol data
 
             trading_pairs << [
-              symbol['symbol'],
+              "#{symbol['baseAsset']}/#{symbol['quoteAsset']}",
               symbol['baseAsset'],
               symbol['quoteAsset']
             ]
