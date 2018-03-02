@@ -71,6 +71,10 @@ module ExchangeWrapper
           prices
         end
 
+        def metadata
+          ::ExchangeWrapper::Binance::PublicApi.day_pricing
+        end
+
         private
 
         def trading_pairs_map

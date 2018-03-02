@@ -99,7 +99,11 @@ module ExchangeWrapper
         end
 
         def metadata
-          prices(true)
+          if defined?(::Rails)
+            ::Rails.cache.read('ExchangeWrapper/gdax-utils-metadata') || prices(true)
+          else
+            prices(true)
+          end
         end
 
         private
