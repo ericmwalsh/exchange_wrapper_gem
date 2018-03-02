@@ -59,7 +59,7 @@ module ExchangeWrapper
         def prices
           prices = []
           metadata = []
-          if defined?(::Rails) && tps = ::Rails.cache.read('gdax-public-api-products')
+          if defined?(::Rails) && tps = ::Rails.cache.read('ExchangeWrapper/gdax-public-api-products')
             # [ ['BCHBTC', 'BCH', 'BTC'] ]
             products = tps.map {|tp| "#{tp[1]}-#{tp[2]}"}
             ws = ::ExchangeWrapper::Gdax::Websocket.new(
@@ -87,7 +87,7 @@ module ExchangeWrapper
           end
 
           if defined?(::Rails)
-            ::Rails.cache.fetch('gdax-utils-metdata', expires_in: 58.seconds) do
+            ::Rails.cache.fetch('ExchangeWrapper/gdax-utils-metdata', expires_in: 58.seconds) do
               metadata
             end
           end
@@ -99,7 +99,7 @@ module ExchangeWrapper
 
         def fetch_products(key, secret, passphrase) # string, string string
           if defined?(::Rails)
-            ::Rails.cache.fetch('gdax-public-api-products', expires_in: 29.minutes) do
+            ::Rails.cache.fetch('ExchangeWrapper/gdax-public-api-products', expires_in: 29.minutes) do
               ::ExchangeWrapper::Gdax::PublicApi.products(
                 key,
                 secret,

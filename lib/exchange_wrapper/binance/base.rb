@@ -89,7 +89,7 @@ module ExchangeWrapper
 
         def disable_requests
           if defined?(::Rails)
-            ::Rails.cache.fetch('binance-requests-disabled', expires_in: 3.minutes) do
+            ::Rails.cache.fetch('ExchangeWrapper/binance-requests-disabled', expires_in: 3.minutes) do
               true
             end
           end
@@ -97,13 +97,13 @@ module ExchangeWrapper
 
         def enable_requests
           if defined?(::Rails)
-            ::Rails.cache.delete('binance-requests-disabled')
+            ::Rails.cache.delete('ExchangeWrapper/binance-requests-disabled')
           end
         end
 
         def requests_disabled?
           if defined?(::Rails)
-            ::Rails.cache.read('binance-requests-disabled').present?
+            ::Rails.cache.read('ExchangeWrapper/binance-requests-disabled').present?
           else
             false
           end

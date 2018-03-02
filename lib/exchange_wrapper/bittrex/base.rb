@@ -79,7 +79,7 @@ module ExchangeWrapper
 
         def disable_requests
           if defined?(::Rails)
-            ::Rails.cache.fetch('bittrex-requests-disabled', expires_in: 3.minutes) do
+            ::Rails.cache.fetch('ExchangeWrapper/bittrex-requests-disabled', expires_in: 3.minutes) do
               true
             end
           end
@@ -87,13 +87,13 @@ module ExchangeWrapper
 
         def enable_requests
           if defined?(::Rails)
-            ::Rails.cache.delete('bittrex-requests-disabled')
+            ::Rails.cache.delete('ExchangeWrapper/bittrex-requests-disabled')
           end
         end
 
         def requests_disabled?
           if defined?(::Rails)
-            ::Rails.cache.read('bittrex-requests-disabled').present?
+            ::Rails.cache.read('ExchangeWrapper/bittrex-requests-disabled').present?
           else
             false
           end

@@ -18,7 +18,7 @@ module ExchangeWrapper
           symbols = parsed_response.map {|currency| currency['symbol']}
           if defined?(::Rails)
             ::Rails.cache.write(
-              'symbols',
+              'ExchangeWrapper/cmc_symbols',
               symbols
             ) && symbols
           else

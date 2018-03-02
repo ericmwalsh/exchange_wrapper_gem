@@ -21,7 +21,7 @@ module ExchangeWrapper
 
           if defined?(::Rails)
             ::Rails.cache.write(
-              "#{base_uri}#{uri} #{params.to_json}",
+              "ExchangeWrapper/#{base_uri}#{uri} #{params.to_json}",
               parsed_response
             ) && parsed_response
           else
@@ -31,7 +31,7 @@ module ExchangeWrapper
 
         def request(uri, params = {}, expires_in = 3600) # 1.hour)
           if defined?(::Rails)
-            ::Rails.cache.fetch("#{base_uri}#{uri} #{params.to_json}", expires_in: expires_in) do
+            ::Rails.cache.fetch("ExchangeWrapper/#{base_uri}#{uri} #{params.to_json}", expires_in: expires_in) do
               get(
                 uri,
                 {
@@ -51,7 +51,7 @@ module ExchangeWrapper
 
         def delete_key(uri, params = {})
           if defined?(::Rails)
-            ::Rails.cache.delete("#{base_uri}#{uri} #{params.to_json}")
+            ::Rails.cache.delete("ExchangeWrapper/#{base_uri}#{uri} #{params.to_json}")
           end
         end
 

@@ -37,7 +37,7 @@ module ExchangeWrapper
 
         def disable_requests
           if defined?(::Rails)
-            ::Rails.cache.fetch('coinbase-requests-disabled', expires_in: 3.minutes) do
+            ::Rails.cache.fetch('ExchangeWrapper/coinbase-requests-disabled', expires_in: 3.minutes) do
               true
             end
           end
@@ -45,13 +45,13 @@ module ExchangeWrapper
 
         def enable_requests
           if defined?(::Rails)
-            ::Rails.cache.delete('coinbase-requests-disabled')
+            ::Rails.cache.delete('ExchangeWrapper/coinbase-requests-disabled')
           end
         end
 
         def requests_disabled?
           if defined?(::Rails)
-            ::Rails.cache.read('coinbase-requests-disabled').present?
+            ::Rails.cache.read('ExchangeWrapper/coinbase-requests-disabled').present?
           else
             false
           end
