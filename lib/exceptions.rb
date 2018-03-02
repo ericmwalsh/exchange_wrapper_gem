@@ -38,6 +38,12 @@ module Exceptions
 
   end
 
+  class OutdatedError < BaseError
+    def initialize(message = 'Outdated trick; API needs to be re-examined', status = API_ERROR) # string, integer
+      super(message, status)
+    end
+  end
+
   # 3rd party API exceptions/errors
   # base errors, 4 of them
   # input / rate_limit / server / unknown

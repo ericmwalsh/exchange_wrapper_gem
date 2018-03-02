@@ -4,7 +4,7 @@ module ExchangeWrapper
     class Utils
       class << self
 
-        def holdings(key, secret, passphrase)
+        def holdings(key, secret, passphrase) # string, string string
           holdings = {}
           ::ExchangeWrapper::Gdax::AccountApi.accounts(
             key,
@@ -20,7 +20,7 @@ module ExchangeWrapper
           holdings
         end
 
-        def symbols(key, secret, passphrase)
+        def symbols(key, secret, passphrase) # string, string string
           symbols = []
 
           ::ExchangeWrapper::Gdax::PublicApi.currencies(
@@ -37,7 +37,7 @@ module ExchangeWrapper
           symbols
         end
 
-        def trading_pairs(key, secret, passphrase)
+        def trading_pairs(key, secret, passphrase) # string, string string
           trading_pairs = []
 
           fetch_products(key, secret, passphrase).each do |product|
@@ -58,6 +58,7 @@ module ExchangeWrapper
         # prices
         def prices
           prices = []
+          metadata = []
           if defined?(::Rails) && tps = ::Rails.cache.read('gdax-public-api-products')
             # [ ['BCHBTC', 'BCH', 'BTC'] ]
             products = tps.map {|tp| "#{tp[1]}-#{tp[2]}"}
@@ -71,6 +72,7 @@ module ExchangeWrapper
 
           count = 0
           ws.ticker do |resp|
+            metadata << resp
             prices << {
               'symbol' => resp['product_id'].sub(/-/,'/'),
               'price' => resp['price']
@@ -80,12 +82,22 @@ module ExchangeWrapper
           end
           ws.start!
 
+          if products & metadata.map {|md| md['product_id']} != products
+            raise ::Exceptions::OutdatedError
+          end
+
+          if defined?(::Rails)
+            ::Rails.cache.fetch('gdax-utils-metdata', expires_in: 58.seconds) do
+              metadata
+            end
+          end
+
           prices
         end
 
         private
 
-        def fetch_products(key, secret, passphrase)
+        def fetch_products(key, secret, passphrase) # string, string string
           if defined?(::Rails)
             ::Rails.cache.fetch('gdax-public-api-products', expires_in: 29.minutes) do
               ::ExchangeWrapper::Gdax::PublicApi.products(
