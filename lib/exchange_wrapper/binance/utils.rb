@@ -22,7 +22,7 @@ module ExchangeWrapper
         def symbols
           symbols = []
 
-          ::ExchangeWrapper::Binance::PublicApi.exchange_info['symbols'].each do |symbol|
+          fetch_symbols.each do |symbol|
             next if symbol['symbol'] == '123456' # skip dummy symbol data
 
             symbols << symbol['baseAsset']
@@ -37,7 +37,7 @@ module ExchangeWrapper
         def trading_pairs
           trading_pairs = []
 
-          ::ExchangeWrapper::Binance::PublicApi.exchange_info['symbols'].each do |symbol|
+          fetch_symbols.each do |symbol|
             next if symbol['symbol'] == '123456' # skip dummy symbol data
 
             trading_pairs << [
@@ -56,12 +56,44 @@ module ExchangeWrapper
           prices = ::ExchangeWrapper::Binance::PublicApi.prices.sort do |tp_0, tp_1|
             tp_0['symbol'] <=> tp_1['symbol']
           end
-          # remove dummy trading pair
-          prices.delete_at(prices.index {|tp| tp['symbol'] == '123456'} || prices.length)
+          # remap the symbols with a '/'
+          # e.g. ETHBTC -> ETH/BTC
+          map = trading_pairs_map
+          prices.map! do |tp|
+            if tp['symbol'] == '123456' # skip dummy symbol data
+              nil
+            else
+              tp.merge!('symbol' => map[tp['symbol']])
+              tp
+            end
+          end.compact!
 
           prices
         end
 
+        private
+
+        def trading_pairs_map
+          trading_pairs_map = {}
+
+          fetch_symbols.each do |symbol|
+            next if symbol['symbol'] == '123456' # skip dummy symbol data
+
+            trading_pairs_map[symbol['symbol']] = "#{symbol['baseAsset']}/#{symbol['quoteAsset']}"
+          end
+
+          trading_pairs_map
+        end
+
+        def fetch_symbols
+          if defined?(::Rails)
+            ::Rails.cache.fetch('binance-public-api-exchange-info', expires_in: 58.seconds) do
+              ::ExchangeWrapper::Binance::PublicApi.exchange_info
+            end
+          else
+            ::ExchangeWrapper::Binance::PublicApi.exchange_info
+          end['symbols']
+        end
       end
     end
   end
