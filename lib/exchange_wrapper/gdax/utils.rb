@@ -55,8 +55,7 @@ module ExchangeWrapper
           trading_pairs
         end
 
-        # prices
-        def prices
+        def prices(yield_md = false) # boolean
           prices = []
           metadata = []
           if defined?(::Rails) && tps = ::Rails.cache.read('ExchangeWrapper/gdax-public-api-products')
@@ -92,7 +91,15 @@ module ExchangeWrapper
             end
           end
 
-          prices
+          if yield_md
+            metadata
+          else
+            prices
+          end
+        end
+
+        def metadata
+          prices(true)
         end
 
         private
