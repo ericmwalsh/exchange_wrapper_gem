@@ -3,6 +3,7 @@ require 'coinbase/exchange'
 require_relative 'account_api'
 require_relative 'public_api'
 require_relative 'utils'
+require_relative 'websocket'
 # ::ExchangeWrapper::Gdax::Base
 module ExchangeWrapper
   module Gdax

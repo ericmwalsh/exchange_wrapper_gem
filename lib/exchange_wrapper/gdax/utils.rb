@@ -40,11 +40,7 @@ module ExchangeWrapper
         def trading_pairs(key, secret, passphrase)
           trading_pairs = []
 
-          ::ExchangeWrapper::Gdax::PublicApi.products(
-            key,
-            secret,
-            passphrase
-          ).each do |product|
+          fetch_products(key, secret, passphrase).each do |product|
             next unless product['status'] == 'online'
 
             trading_pairs << [
@@ -60,8 +56,52 @@ module ExchangeWrapper
         end
 
         # prices
+        def prices
+          prices = []
+          if defined?(::Rails) && tps = ::Rails.cache.read('gdax-public-api-products')
+            # [ ['BCHBTC', 'BCH', 'BTC'] ]
+            products = tps.map {|tp| "#{tp[1]}-#{tp[2]}"}
+            ws = ::ExchangeWrapper::Gdax::Websocket.new(
+              products: products
+            )
+          else
+            products = ::ExchangeWrapper::Gdax::Websocket::PRODUCTS
+            ws = ::ExchangeWrapper::Gdax::Websocket.new
+          end
+
+          count = 0
+          ws.ticker do |resp|
+            prices << {
+              'symbol' => resp['product_id'].sub(/-/,'/'),
+              'price' => resp['price']
+            }
+            count+=1
+            ws.stop! if count == products.size
+          end
+          ws.start!
+
+          prices
+        end
 
         private
+
+        def fetch_products(key, secret, passphrase)
+          if defined?(::Rails)
+            ::Rails.cache.fetch('gdax-public-api-products', expires_in: 29.minutes) do
+              ::ExchangeWrapper::Gdax::PublicApi.products(
+                key,
+                secret,
+                passphrase
+              )
+            end
+          else
+            ::ExchangeWrapper::Gdax::PublicApi.products(
+              key,
+              secret,
+              passphrase
+            )
+          end
+        end
 
         def fiat_currencies
           [
