@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    exchange_wrapper (0.1.10)
+    exchange_wrapper (0.1.11)
       coinbase (~> 4.2)
       coinbase-exchange (~> 0.2)
       faraday (~> 0.14)
