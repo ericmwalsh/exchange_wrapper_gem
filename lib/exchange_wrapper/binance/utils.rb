@@ -72,7 +72,10 @@ module ExchangeWrapper
         end
 
         def metadata
-          ::ExchangeWrapper::Binance::PublicApi.day_pricing
+          map = trading_pairs_map
+          ::ExchangeWrapper::Binance::PublicApi.day_pricing.map do |md|
+            md.merge('symbol' => map[md['symbol']])
+          end
         end
 
         private
