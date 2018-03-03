@@ -13,6 +13,22 @@ module ExchangeWrapper
           )
         end
 
+        def currencies(key, secret)
+          ::ExchangeWrapper::Coinbase::Base.request(
+            key,
+            secret,
+            :currencies
+          )
+        end
+
+        def exchange_rates(key, secret)
+          ::ExchangeWrapper::Coinbase::Base.request(
+            key,
+            secret,
+            :exchange_rates
+          )
+        end
+
       end
     end
   end

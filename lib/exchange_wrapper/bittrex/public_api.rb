@@ -5,6 +5,8 @@ module ExchangeWrapper
 
       class << self
 
+        DEFAULT_MARKET = 'BTC-ETH'
+
         def get_markets
           request(
             :get,
@@ -19,12 +21,15 @@ module ExchangeWrapper
           )
         end
 
-        # def get_ticker
-        #   request(
-        #     :get,
-        #     'public/getticker'
-        #   )
-        # end
+        def get_ticker(market = DEFAULT_MARKET)
+          request(
+            :get,
+            'public/getticker',
+            {
+              market: market
+            }
+          )
+        end
 
         def get_market_summaries
           request(
@@ -33,12 +38,15 @@ module ExchangeWrapper
           )
         end
 
-        # def get_market_summary
-        #   request(
-        #     :get,
-        #     'public/getmarketsummary'
-        #   )
-        # end
+        def get_market_summary(market = DEFAULT_MARKET)
+          request(
+            :get,
+            'public/getmarketsummary',
+            {
+              market: market
+            }
+          )
+        end
 
         # def get_order_book
         #   request(
@@ -47,12 +55,15 @@ module ExchangeWrapper
         #   )
         # end
 
-        # def get_market_history
-        #   request(
-        #     :get,
-        #     'public/getmarkethistory'
-        #   )
-        # end
+        def get_market_history(market = DEFAULT_MARKET)
+          request(
+            :get,
+            'public/getmarkethistory',
+            {
+              market: market
+            }
+          )
+        end
 
         private
 

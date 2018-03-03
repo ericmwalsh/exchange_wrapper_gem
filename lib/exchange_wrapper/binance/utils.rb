@@ -1,4 +1,5 @@
 # ::ExchangeWrapper::Binance::Utils
+# https://github.com/binance-exchange/binance-official-api-docs
 module ExchangeWrapper
   module Binance
     class Utils

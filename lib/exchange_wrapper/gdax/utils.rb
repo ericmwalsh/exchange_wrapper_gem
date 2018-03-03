@@ -1,10 +1,11 @@
 # ::ExchangeWrapper::Gdax::Utils
+# https://docs.gdax.com/?ruby
 module ExchangeWrapper
   module Gdax
     class Utils
       class << self
 
-        def holdings(key, secret, passphrase) # string, string string
+        def holdings(key, secret, passphrase) # string, string, string
           raise ::Exceptions::InvalidInputError if key.nil? || secret.nil? || passphrase.nil?
           holdings = {}
           ::ExchangeWrapper::Gdax::AccountApi.accounts(
@@ -25,7 +26,7 @@ module ExchangeWrapper
           key = ENV['GDAX_API_KEY'],
           secret = ENV['GDAX_API_SECRET'],
           passphrase = ENV['GDAX_API_PASSPHRASE']
-        ) # string, string string
+        ) # string, string, string
           raise ::Exceptions::InvalidInputError if key.nil? || secret.nil? || passphrase.nil?
           symbols = []
 
@@ -47,7 +48,7 @@ module ExchangeWrapper
           key = ENV['GDAX_API_KEY'],
           secret = ENV['GDAX_API_SECRET'],
           passphrase = ENV['GDAX_API_PASSPHRASE']
-        ) # string, string string
+        ) # string, string, string
           raise ::Exceptions::InvalidInputError if key.nil? || secret.nil? || passphrase.nil?
           trading_pairs = []
 
@@ -71,7 +72,7 @@ module ExchangeWrapper
           key = ENV['GDAX_API_KEY'],
           secret = ENV['GDAX_API_SECRET'],
           passphrase = ENV['GDAX_API_PASSPHRASE']
-        ) # boolean, string, string string
+        ) # boolean, string, string, string
           prices = []
           metadata = []
           tps = if key.nil? || secret.nil? || passphrase.nil?
@@ -139,7 +140,7 @@ module ExchangeWrapper
 
         private
 
-        def fetch_products(key, secret, passphrase) # string, string string
+        def fetch_products(key, secret, passphrase) # string, string, string
           raise ::Exceptions::InvalidInputError if key.nil? || secret.nil? || passphrase.nil?
           if defined?(::Rails)
             ::Rails.cache.fetch('ExchangeWrapper/gdax-public-api-products', expires_in: 29.minutes) do
