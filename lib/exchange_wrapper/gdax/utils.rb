@@ -4,7 +4,11 @@ module ExchangeWrapper
     class Utils
       class << self
 
-        def holdings(key, secret, passphrase) # string, string string
+        def holdings(
+          key = ENV['GDAX_API_KEY'],
+          secret = ENV['GDAX_API_SECRET'],
+          passphrase = ENV['GDAX_API_PASSPHRASE']
+        ) # string, string string
           holdings = {}
           ::ExchangeWrapper::Gdax::AccountApi.accounts(
             key,
@@ -20,7 +24,11 @@ module ExchangeWrapper
           holdings
         end
 
-        def symbols(key, secret, passphrase) # string, string string
+        def symbols(
+          key = ENV['GDAX_API_KEY'],
+          secret = ENV['GDAX_API_SECRET'],
+          passphrase = ENV['GDAX_API_PASSPHRASE']
+        ) # string, string string
           symbols = []
 
           ::ExchangeWrapper::Gdax::PublicApi.currencies(
@@ -37,7 +45,11 @@ module ExchangeWrapper
           symbols
         end
 
-        def trading_pairs(key, secret, passphrase) # string, string string
+        def trading_pairs(
+          key = ENV['GDAX_API_KEY'],
+          secret = ENV['GDAX_API_SECRET'],
+          passphrase = ENV['GDAX_API_PASSPHRASE']
+        ) # string, string string
           trading_pairs = []
 
           fetch_products(key, secret, passphrase).each do |product|
