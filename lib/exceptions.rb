@@ -38,6 +38,12 @@ module Exceptions
 
   end
 
+  class InvalidInputError < BaseError
+    def initialize(message = 'Invalid input; check your API credentials', status = API_INPUT) # string, integer
+      super(message, status)
+    end
+  end
+
   class OutdatedError < BaseError
     def initialize(message = 'Outdated trick; API needs to be re-examined', status = API_ERROR) # string, integer
       super(message, status)
