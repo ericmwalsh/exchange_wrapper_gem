@@ -66,7 +66,14 @@ module ExchangeWrapper
         end
 
         def metadata
-          fetch_market_summaries
+          fetch_market_summaries.map do |market|
+            formatted_symbol = begin
+              currencies = market['MarketName'].split('-')
+              "#{currencies[0]}/#{currencies[1]}"
+            end
+
+            market.merge('symbol' => formatted_symbol)
+          end
         end
 
         private
