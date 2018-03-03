@@ -59,7 +59,7 @@ module ExchangeWrapper
           fetch_market_summaries.map do |market|
             formatted_symbol = begin
               currencies = market['MarketName'].split('-')
-              "#{currencies[0]}/#{currencies[1]}"
+              "#{currencies[1]}/#{currencies[0]}"
             end
 
             {
@@ -73,7 +73,7 @@ module ExchangeWrapper
           fetch_market_summaries.map do |market|
             formatted_symbol = begin
               currencies = market['MarketName'].split('-')
-              "#{currencies[0]}/#{currencies[1]}"
+              "#{currencies[1]}/#{currencies[0]}"
             end
 
             market.merge('symbol' => formatted_symbol)
