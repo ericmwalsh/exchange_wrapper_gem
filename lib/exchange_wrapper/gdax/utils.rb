@@ -63,10 +63,19 @@ module ExchangeWrapper
           trading_pairs
         end
 
-        def prices(yield_md = false) # boolean
+        def prices(
+          yield_md = false,
+          key = ENV['GDAX_API_KEY'],
+          secret = ENV['GDAX_API_SECRET'],
+          passphrase = ENV['GDAX_API_PASSPHRASE']
+        ) # boolean, string, string string
           prices = []
           metadata = []
-          tps = trading_pairs
+          tps = if key.nil? || secret.nil? || passphrase.nil?
+            []
+          else
+            trading_pairs(key, secret, passphrase)
+          end
 
           if defined?(::Rails) && tps
             # [ ['BCHBTC', 'BCH', 'BTC'] ]
@@ -81,11 +90,16 @@ module ExchangeWrapper
 
           count = 0
           ws.ticker do |resp|
-            metadata << resp
+            hyphenated_symbol = resp['product_id'].sub(/-/,'/')
+
+            metadata << resp.merge(
+              'symbol' => hyphenated_symbol
+            )
             prices << {
-              'symbol' => resp['product_id'].sub(/-/,'/'),
+              'symbol' => hyphenated_symbol,
               'price' => resp['price']
             }
+
             count+=1
             ws.stop! if count == products.size
           end
@@ -108,11 +122,15 @@ module ExchangeWrapper
           end
         end
 
-        def metadata
+        def metadata(
+          key = ENV['GDAX_API_KEY'],
+          secret = ENV['GDAX_API_SECRET'],
+          passphrase = ENV['GDAX_API_PASSPHRASE']
+        )
           if defined?(::Rails)
             ::Rails.cache.read('ExchangeWrapper/gdax-utils-metadata') || prices(true)
           else
-            prices(true)
+            prices(true, key, secret, passphrase)
           end
         end
 
