@@ -26,7 +26,9 @@ module ExchangeWrapper
           currencies = ::ExchangeWrapper::Bittrex::PublicApi.get_currencies['result']
 
           currencies.each do |currency|
-            symbols << currency['Currency']
+            if currency['IsActive']
+              symbols << currency['Currency']
+            end
           end
 
           symbols.sort!.uniq!
@@ -39,11 +41,13 @@ module ExchangeWrapper
           markets = ::ExchangeWrapper::Bittrex::PublicApi.get_markets['result']
 
           markets.each do |market|
-            trading_pairs << [
-              "#{market['MarketCurrency']}/#{market['BaseCurrency']}",
-              market['MarketCurrency'],
-              market['BaseCurrency']
-            ]
+            if market['IsActive']
+              trading_pairs << [
+                "#{market['MarketCurrency']}/#{market['BaseCurrency']}",
+                market['MarketCurrency'],
+                market['BaseCurrency']
+              ]
+            end
           end
           # sort by symbol
           trading_pairs.sort! {|tp_0, tp_1| tp_0[0] <=> tp_1[0]}
