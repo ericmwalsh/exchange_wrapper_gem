@@ -4,11 +4,7 @@ module ExchangeWrapper
     class Utils
       class << self
 
-        def holdings(
-          key = ENV['GDAX_API_KEY'],
-          secret = ENV['GDAX_API_SECRET'],
-          passphrase = ENV['GDAX_API_PASSPHRASE']
-        ) # string, string string
+        def holdings(key, secret, passphrase) # string, string string
           holdings = {}
           ::ExchangeWrapper::Gdax::AccountApi.accounts(
             key,
@@ -70,7 +66,9 @@ module ExchangeWrapper
         def prices(yield_md = false) # boolean
           prices = []
           metadata = []
-          if defined?(::Rails) && tps = ::Rails.cache.read('ExchangeWrapper/gdax-public-api-products')
+          tps = trading_pairs
+
+          if defined?(::Rails) && tps
             # [ ['BCHBTC', 'BCH', 'BTC'] ]
             products = tps.map {|tp| "#{tp[1]}-#{tp[2]}"}
             ws = ::ExchangeWrapper::Gdax::Websocket.new(
@@ -127,7 +125,7 @@ module ExchangeWrapper
                 key,
                 secret,
                 passphrase
-              )
+              ).map {|product| product.as_json}
             end
           else
             ::ExchangeWrapper::Gdax::PublicApi.products(
