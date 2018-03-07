@@ -14,7 +14,7 @@ module ExchangeWrapper
             passphrase
           ).each do |currency|
             amount = currency['available'].to_f
-            if amount > 0.0
+            if amount > 0.0 && !currency['currency'].nil?
               holdings[currency['currency']] = amount
             end
           end
@@ -36,6 +36,7 @@ module ExchangeWrapper
             passphrase
           ).each do |currency|
             next unless currency['status'] == 'online'
+            next if currency['id'].nil?
             symbols << currency['id']
           end
 
@@ -54,7 +55,7 @@ module ExchangeWrapper
 
           fetch_products(key, secret, passphrase).each do |product|
             next unless product['status'] == 'online'
-
+            next if product['display_name'].nil? || product['base_currency'].nil? || product['quote_currency'].nil?
             trading_pairs << [
               product['display_name'],
               product['base_currency'],
@@ -107,6 +108,11 @@ module ExchangeWrapper
             count+=1
             ws.stop! if count == products.size
           end
+
+          ws.error do |resp|
+            raise ::Exceptions::ApiServerError, resp.to_json
+          end
+
           ws.start!
 
           if products & metadata.map {|md| md['product_id']} != products
@@ -157,14 +163,6 @@ module ExchangeWrapper
               passphrase
             )
           end
-        end
-
-        def fiat_currencies
-          [
-            'EUR',
-            'GBP',
-            'USD'
-          ]
         end
 
       end
