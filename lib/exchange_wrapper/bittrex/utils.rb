@@ -13,7 +13,7 @@ module ExchangeWrapper
             secret
           )['result'].each do |currency|
             amount = currency['Available'].to_f
-            if amount > 0.0
+            if amount > 0.0 && !currency['Currency'].nil?
               holdings[currency['Currency']] = amount
             end
           end
@@ -26,7 +26,7 @@ module ExchangeWrapper
           currencies = ::ExchangeWrapper::Bittrex::PublicApi.get_currencies['result']
 
           currencies.each do |currency|
-            if currency['IsActive']
+            if currency['IsActive'] && !currency['Currency'].nil?
               symbols << currency['Currency']
             end
           end
@@ -41,7 +41,7 @@ module ExchangeWrapper
           markets = ::ExchangeWrapper::Bittrex::PublicApi.get_markets['result']
 
           markets.each do |market|
-            if market['IsActive']
+            if market['IsActive'] && !market['MarketCurrency'].nil? && !market['BaseCurrency'].nil?
               trading_pairs << [
                 "#{market['MarketCurrency']}/#{market['BaseCurrency']}",
                 market['MarketCurrency'],
@@ -56,28 +56,38 @@ module ExchangeWrapper
         end
 
         def prices
-          fetch_market_summaries.map do |market|
-            formatted_symbol = begin
-              currencies = market['MarketName'].split('-')
-              "#{currencies[1]}/#{currencies[0]}"
-            end
+          prices = []
+          fetch_market_summaries.each do |market|
+            if !market['MarketName'].nil? && !market['Last'].nil?
+              formatted_symbol = begin
+                currencies = market['MarketName'].split('-')
+                "#{currencies[1]}/#{currencies[0]}"
+              end
 
-            {
-              'symbol' => formatted_symbol,
-              'price' => market['Last']
-            }
+              prices << {
+                'symbol' => formatted_symbol,
+                'price' => market['Last']
+              }
+            end
           end
+
+          prices
         end
 
         def metadata
-          fetch_market_summaries.map do |market|
-            formatted_symbol = begin
-              currencies = market['MarketName'].split('-')
-              "#{currencies[1]}/#{currencies[0]}"
-            end
+          metadata = []
+          fetch_market_summaries.each do |market|
+            if !market['MarketName'].nil?
+              formatted_symbol = begin
+                currencies = market['MarketName'].split('-')
+                "#{currencies[1]}/#{currencies[0]}"
+              end
 
-            market.merge('symbol' => formatted_symbol)
+              metadata << market.merge('symbol' => formatted_symbol)
+            end
           end
+
+          metadata
         end
 
         private
