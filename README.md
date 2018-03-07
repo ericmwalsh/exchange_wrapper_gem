@@ -18,6 +18,7 @@ This table shows the methods that are supported per exchange.
 |  Bittrex    |     X     |     X    |        X       |     X   |     X    |    Hard
 |  Coinbase   |     X     |     -    |        -       |     -   |     -    |     -
 |  GDAX       |     X     |     X    |        X       |     X   |     X    |    Easy
+|  Gemini     |     X     |     X    |        X       |     X   |     X    |    Easy
 
 
 ### Notes

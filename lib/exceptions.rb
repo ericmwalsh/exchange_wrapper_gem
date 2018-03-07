@@ -36,6 +36,15 @@ module Exceptions
       "GDAX Error // #{error_object.class.to_s}: #{error_object.message}"
     end
 
+    # {
+    #   "result":"error",
+    #   "reason":"Bad Request",
+    #   "message":"Supplied value 'btcusdz' is not a valid symbol.  Please correct your API request to use one of the supported symbols: [btcusd, ethbtc, ethusd]"
+    # }
+    def gemini_error_message(error_object)
+      "Gemini Error // #{error_object['reason']}: #{error_object['message']}"
+    end
+
   end
 
   class InvalidInputError < BaseError
@@ -107,6 +116,13 @@ module Exceptions
     end
   end
 
+  # gemini
+  class GeminiApiInputError < ApiInputError
+    def initialize(error_hash, error_code = API_INPUT) # hash, integer
+      super(gemini_error_message(error_hash), error_code)
+    end
+  end
+
   # rate limit errors
 
   # binance
@@ -137,6 +153,13 @@ module Exceptions
     end
   end
 
+  # gemini
+  class GeminiApiRateLimitError < ApiRateLimitError
+    def initialize(error_hash, error_code = RATE_LIMIT)  # hash, integer
+      super(gemini_error_message(error_hash), error_code)
+    end
+  end
+
   # api server errors
 
   # binance
@@ -164,6 +187,13 @@ module Exceptions
   class GdaxApiServerError < ApiServerError
     def initialize(error_object) # error_object
       super(gdax_error_message(error_object))
+    end
+  end
+
+  # gemini
+  class GeminiApiServerError < ApiServerError
+    def initialize(error_hash, error_code = API_ERROR) # hash, integer
+      super(gemini_error_message(error_hash), error_code)
     end
   end
 
