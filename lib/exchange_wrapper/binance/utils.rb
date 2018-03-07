@@ -13,7 +13,7 @@ module ExchangeWrapper
             secret
           )['balances'].each do |currency|
             amount = currency['free'].to_f
-            if amount > 0.0
+            if amount > 0.0 && !currency['asset'].nil?
               holdings[currency['asset']] = amount
             end
           end
@@ -26,7 +26,7 @@ module ExchangeWrapper
 
           fetch_symbols.each do |symbol|
             next if symbol['symbol'] == '123456' # skip dummy symbol data
-
+            next if symbol['baseAsset'].nil? || symbol['quoteAsset'].nil?
             symbols << symbol['baseAsset']
             symbols << symbol['quoteAsset']
           end
@@ -41,7 +41,7 @@ module ExchangeWrapper
 
           fetch_symbols.each do |symbol|
             next if symbol['symbol'] == '123456' # skip dummy symbol data
-
+            next if symbol['baseAsset'].nil? || symbol['quoteAsset'].nil?
             trading_pairs << [
               "#{symbol['baseAsset']}/#{symbol['quoteAsset']}",
               symbol['baseAsset'],
@@ -64,9 +64,16 @@ module ExchangeWrapper
           prices.map! do |tp|
             if tp['symbol'] == '123456' # skip dummy symbol data
               nil
+            elsif tp['symbol'].nil? || tp['price'].nil?
+              nil
             else
-              tp.merge!('symbol' => map[tp['symbol']])
-              tp
+              mapped_symbol = map[tp['symbol']]
+              if mapped_symbol.nil?
+                nil
+              else
+                tp.merge!('symbol' => mapped_symbol)
+                tp
+              end
             end
           end.compact!
 
@@ -74,14 +81,25 @@ module ExchangeWrapper
         end
 
         def metadata
+          metadata = ::ExchangeWrapper::Binance::PublicApi.day_pricing
           map = trading_pairs_map
-          ::ExchangeWrapper::Binance::PublicApi.day_pricing.map do |md|
-            if md['symbol'] == '123456'
+
+          metadata.map! do |md|
+            if md['symbol'] == '123456' # skip dummy symbol data
+              nil
+            elsif md['symbol'].nil?
               nil
             else
-              md.merge('symbol' => map[md['symbol']])
+              mapped_symbol = map[md['symbol']]
+              if mapped_symbol.nil?
+                nil
+              else
+                md.merge!('symbol' => mapped_symbol)
+              end
             end
-          end.compact
+          end.compact!
+
+          metadata
         end
 
         private
@@ -91,6 +109,7 @@ module ExchangeWrapper
 
           fetch_symbols.each do |symbol|
             next if symbol['symbol'] == '123456' # skip dummy symbol data
+            next if symbol['symbol'].nil? || symbol['baseAsset'].nil? || symbol['quoteAsset'].nil?
 
             trading_pairs_map[symbol['symbol']] = "#{symbol['baseAsset']}/#{symbol['quoteAsset']}"
           end
