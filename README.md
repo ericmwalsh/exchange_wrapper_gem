@@ -12,13 +12,19 @@ If you have any issues or if you'd like to contribute please visit the **Contrib
 This table shows the methods that are supported per exchange.
 
 
-|  Exchange   | #holdings | #symbols | #trading_pairs | #prices | #metdata | #backfill
-|  :------:   | :-------: | :------: | :------------: | :-----: | :------: | :-------:
-|  Binance    |     X     |     X    |        X       |     X   |     X    |    Hard
-|  Bittrex    |     X     |     X    |        X       |     X   |     X    |    Hard
-|  Coinbase   |     X     |     -    |        -       |     -   |     -    |     -
-|  GDAX       |     X     |     X    |        X       |     X   |     X    |    Easy
-|  Gemini     |     X     |     X    |        X       |     X   |     X    |    Easy
+|  Exchange                                   | #holdings | #symbols | #trading_pairs | #prices | #metadata | #backfill | #orders
+|  :------:                                   | :-------: | :------: | :------------: | :-----: | :-------: | :-------: | :-----:
+|  [Binance](https://www.binance.com/)        |     X     |     X    |        X       |     X   |     X     |    Hard   |    ?
+|  [Bitstamp](https://www.bitstamp.net/)      |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
+|  [Bittrex](https://bittrex.com/)            |     X     |     X    |        X       |     X   |     X     |    Hard   |    ?
+|  [CEX.io](https://cex.io/)                  |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
+|  [Coinbase](https://www.coinbase.com/)      |     X     |     -    |        -       |     -   |     -     |     -     |    ?
+|  [Cryptopia](https://www.cryptopia.co.nz/)  |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
+|  [GDAX](https://www.gdax.com/)              |     X     |     X    |        X       |     X   |     X     |    Easy   |    ?
+|  [Gemini](https://gemini.com/)              |     X     |     X    |        X       |     X   |     X     |    Easy   |    ?
+|  [Kraken](https://www.kraken.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
+|  [KuCoin](https://www.kucoin.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
+|  [Poloniex](https://poloniex.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
 
 
 ### Notes
@@ -57,7 +63,7 @@ Or install it yourself as:
   ```
 * Symbols cannot be `nil` values and amounts cannot be `0` values (returns only symbols with non-zero amount values)
 * Does not account for locked funds
-* *GDAX requires a passphrase in addition key and secret*
+* *GDAX requires a passphrase in addition to a key and secret*
 
 ### `#symbols`
 * ```ruby
@@ -125,6 +131,9 @@ Or install it yourself as:
 * *GDAX requires a key, secret, and passphrase*
 
 ### `#backfill`
+* *coming soon*
+
+### `#orders`
 * *coming soon*
 
 
