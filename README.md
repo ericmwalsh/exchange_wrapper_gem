@@ -15,7 +15,7 @@ This table shows the methods that are supported per exchange.
 |  Exchange                                   | #holdings | #symbols | #trading_pairs | #prices | #metadata | #backfill | #orders
 |  :------:                                   | :-------: | :------: | :------------: | :-----: | :-------: | :-------: | :-----:
 |  [Binance](https://www.binance.com/)        |     X     |     X    |        X       |     X   |     X     |    Hard   |    ?
-|  [Bitstamp](https://www.bitstamp.net/)      |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
+|  [Bitstamp](https://www.bitstamp.net/)      |     ?     |     X    |        X       |     X   |     X     |     -     |    ?
 |  [Bittrex](https://bittrex.com/)            |     X     |     X    |        X       |     X   |     X     |    Hard   |    ?
 |  [CEX.io](https://cex.io/)                  |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
 |  [Coinbase](https://www.coinbase.com/)      |     X     |     -    |        -       |     -   |     -     |     -     |    ?
@@ -132,6 +132,7 @@ Or install it yourself as:
 
 ### `#backfill`
 * *coming soon*
+* Might be impossible for... Bitstamp
 
 ### `#orders`
 * *coming soon*
