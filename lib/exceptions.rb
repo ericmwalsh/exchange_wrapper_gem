@@ -41,8 +41,13 @@ module Exceptions
     #   "reason":"Bad Request",
     #   "message":"Supplied value 'btcusdz' is not a valid symbol.  Please correct your API request to use one of the supported symbols: [btcusd, ethbtc, ethusd]"
     # }
-    def gemini_error_message(error_object)
-      "Gemini Error // #{error_object['reason']}: #{error_object['message']}"
+    def gemini_error_message(response_hash)
+      "Gemini Error // #{response_hash['reason']}: #{response_hash['message']}"
+    end
+
+    # {"error":["EQuery:Unknown asset pair"]}
+    def kraken_error_message(response_hash)
+      "Kraken Error // Message: #{response_hash['error'].join(', ')}"
     end
 
   end
@@ -123,6 +128,13 @@ module Exceptions
     end
   end
 
+  # kraken
+  class KrakenApiInputError < ApiInputError
+    def initialize(error_hash, error_code = API_INPUT) # hash, integer
+      super(kraken_error_message(error_hash), error_code)
+    end
+  end
+
   # rate limit errors
 
   # binance
@@ -160,6 +172,13 @@ module Exceptions
     end
   end
 
+  # kraken
+  class KrakenApiRateLimitError < ApiRateLimitError
+    def initialize(error_hash, error_code = RATE_LIMIT)  # hash, integer
+      super(kraken_error_message(error_hash), error_code)
+    end
+  end
+
   # api server errors
 
   # binance
@@ -194,6 +213,13 @@ module Exceptions
   class GeminiApiServerError < ApiServerError
     def initialize(error_hash, error_code = API_ERROR) # hash, integer
       super(gemini_error_message(error_hash), error_code)
+    end
+  end
+
+  # kraken
+  class KrakenApiServerError < ApiServerError
+    def initialize(error_hash, error_code = API_ERROR) # hash, integer
+      super(kraken_error_message(error_hash), error_code)
     end
   end
 

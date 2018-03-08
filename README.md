@@ -22,7 +22,7 @@ This table shows the methods that are supported per exchange.
 |  [Cryptopia](https://www.cryptopia.co.nz/)  |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
 |  [GDAX](https://www.gdax.com/)              |     X     |     X    |        X       |     X   |     X     |    Easy   |    ?
 |  [Gemini](https://gemini.com/)              |     X     |     X    |        X       |     X   |     X     |    Easy   |    ?
-|  [Kraken](https://www.kraken.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
+|  [Kraken](https://www.kraken.com/)          |     ?     |     X    |        X       |     X   |     X     |    Easy   |    ?
 |  [KuCoin](https://www.kucoin.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
 |  [Poloniex](https://poloniex.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
 
