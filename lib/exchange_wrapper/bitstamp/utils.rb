@@ -88,7 +88,7 @@ module ExchangeWrapper
 
         def fetch_trading_pairs
           if defined?(::Rails)
-            ::Rails.cache.fetch('ExchangeWrapper/bitstamp-public-api-trading-pairs', expires_in: 58.seconds) do
+            ::Rails.cache.fetch('ExchangeWrapper/bitstamp-public-api-trading-pairs', expires_in: 30.seconds) do
               ::ExchangeWrapper::Bitstamp::PublicApi.trading_pairs
             end
           else
@@ -102,7 +102,7 @@ module ExchangeWrapper
               if symbol.nil?
                 nil
               else
-                ::Rails.cache.fetch("ExchangeWrapper/bitstamp-public-api-ticker-#{symbol}", expires_in: 58.seconds) do
+                ::Rails.cache.fetch("ExchangeWrapper/bitstamp-public-api-ticker-#{symbol}", expires_in: 30.seconds) do
                   ::ExchangeWrapper::Bitstamp::PublicApi.ticker(symbol)
                 end
               end

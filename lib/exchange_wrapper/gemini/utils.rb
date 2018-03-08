@@ -85,7 +85,7 @@ module ExchangeWrapper
 
         def fetch_symbols
           if defined?(::Rails)
-            ::Rails.cache.fetch('ExchangeWrapper/gemini-public-api-symbols', expires_in: 58.seconds) do
+            ::Rails.cache.fetch('ExchangeWrapper/gemini-public-api-symbols', expires_in: 30.seconds) do
               ::ExchangeWrapper::Gemini::PublicApi.symbols
             end
           else
@@ -99,7 +99,7 @@ module ExchangeWrapper
               if symbol.nil?
                 nil
               else
-                ::Rails.cache.fetch("ExchangeWrapper/gemini-public-api-ticker-#{symbol}", expires_in: 58.seconds) do
+                ::Rails.cache.fetch("ExchangeWrapper/gemini-public-api-ticker-#{symbol}", expires_in: 30.seconds) do
                   ::ExchangeWrapper::Gemini::PublicApi.ticker(symbol)
                 end
               end

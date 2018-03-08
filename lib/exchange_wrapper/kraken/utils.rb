@@ -25,8 +25,8 @@ module ExchangeWrapper
           symbols = []
 
           fetch_symbols.values.each do |symbol_hash|
-            next if symbol_hash['altname'].nil
-            symbols << symbol['altname']
+            next if symbol_hash['altname'].nil?
+            symbols << symbol_hash['altname']
           end
 
           symbols.sort!.uniq!
@@ -100,7 +100,7 @@ module ExchangeWrapper
 
         def fetch_symbols
           if defined?(::Rails)
-            ::Rails.cache.fetch('ExchangeWrapper/kraken-public-api-symbols', expires_in: 58.seconds) do
+            ::Rails.cache.fetch('ExchangeWrapper/kraken-public-api-symbols', expires_in: 30.seconds) do
               ::ExchangeWrapper::Kraken::PublicApi.symbols
             end
           else
@@ -110,17 +110,17 @@ module ExchangeWrapper
 
         def fetch_trading_pairs
           if defined?(::Rails)
-            ::Rails.cache.fetch('ExchangeWrapper/kraken-public-api-trading-pairs', expires_in: 58.seconds) do
+            ::Rails.cache.fetch('ExchangeWrapper/kraken-public-api-trading-pairs', expires_in: 30.seconds) do
               ::ExchangeWrapper::Kraken::PublicApi.trading_pairs
             end
           else
             ::ExchangeWrapper::Kraken::PublicApi.trading_pairs
-          end['result']
+          end['result'].select {|symbol, symbol_hash| !symbol.include? '.d'} # skip .d tickers
         end
 
         def fetch_tickers(symbols) # string, comma separated
           if defined?(::Rails)
-            ::Rails.cache.fetch('ExchangeWrapper/kraken-public-api-tickers', expires_in: 58.seconds) do
+            ::Rails.cache.fetch('ExchangeWrapper/kraken-public-api-tickers', expires_in: 30.seconds) do
               ::ExchangeWrapper::Kraken::PublicApi.ticker(symbols)
             end
           else

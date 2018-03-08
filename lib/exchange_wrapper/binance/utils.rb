@@ -119,7 +119,7 @@ module ExchangeWrapper
 
         def fetch_symbols
           if defined?(::Rails)
-            ::Rails.cache.fetch('ExchangeWrapper/binance-public-api-exchange-info', expires_in: 58.seconds) do
+            ::Rails.cache.fetch('ExchangeWrapper/binance-public-api-exchange-info', expires_in: 30.seconds) do
               ::ExchangeWrapper::Binance::PublicApi.exchange_info
             end
           else

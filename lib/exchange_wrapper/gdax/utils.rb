@@ -120,7 +120,7 @@ module ExchangeWrapper
           end
 
           if defined?(::Rails)
-            ::Rails.cache.fetch('ExchangeWrapper/gdax-utils-metadata', expires_in: 58.seconds) do
+            ::Rails.cache.fetch('ExchangeWrapper/gdax-utils-metadata', expires_in: 30.seconds) do
               metadata
             end
           end

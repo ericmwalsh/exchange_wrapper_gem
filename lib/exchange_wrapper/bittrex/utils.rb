@@ -94,7 +94,7 @@ module ExchangeWrapper
 
         def fetch_market_summaries
           if defined?(::Rails)
-            ::Rails.cache.fetch('bittrex-public-api-get-market-summaries', expires_in: 58.seconds) do
+            ::Rails.cache.fetch('bittrex-public-api-get-market-summaries', expires_in: 30.seconds) do
               ::ExchangeWrapper::Bittrex::PublicApi.get_market_summaries
             end
           else
