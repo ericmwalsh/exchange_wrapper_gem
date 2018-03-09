@@ -14,15 +14,15 @@ This table shows the methods that are supported per exchange.
 
 |  Exchange                                   | #holdings | #symbols | #trading_pairs | #prices | #metadata | #backfill | #orders
 |  :------:                                   | :-------: | :------: | :------------: | :-----: | :-------: | :-------: | :-----:
-|  [Binance](https://www.binance.com/)        |     X     |     X    |        X       |     X   |     X     |    Hard   |    ?
-|  [Bitstamp](https://www.bitstamp.net/)      |     ?     |     X    |        X       |     X   |     X     |     -     |    ?
-|  [Bittrex](https://bittrex.com/)            |     X     |     X    |        X       |     X   |     X     |    Hard   |    ?
+|  [Binance](https://www.binance.com/)        |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Hard   |    ?
+|  [Bitstamp](https://www.bitstamp.net/)      |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |     ✘     |    ?
+|  [Bittrex](https://bittrex.com/)            |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Hard   |    ?
 |  [CEX.io](https://cex.io/)                  |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
-|  [Coinbase](https://www.coinbase.com/)      |     X     |     -    |        -       |     -   |     -     |     -     |    ?
-|  [Cryptopia](https://www.cryptopia.co.nz/)  |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
-|  [GDAX](https://www.gdax.com/)              |     X     |     X    |        X       |     X   |     X     |    Easy   |    ?
-|  [Gemini](https://gemini.com/)              |     X     |     X    |        X       |     X   |     X     |    Easy   |    ?
-|  [Kraken](https://www.kraken.com/)          |     ?     |     X    |        X       |     X   |     X     |    Easy   |    ?
+|  [Coinbase](https://www.coinbase.com/)      |     ✔     |     ✘    |        ✘       |     ✘   |     ✘     |     ✘     |    ?
+|  [Cryptopia](https://www.cryptopia.co.nz/)  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |     ✘     |    ?
+|  [GDAX](https://www.gdax.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
+|  [Gemini](https://gemini.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
+|  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 |  [KuCoin](https://www.kucoin.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
 |  [Poloniex](https://poloniex.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
 
@@ -132,7 +132,7 @@ Or install it yourself as:
 
 ### `#backfill`
 * *coming soon*
-* Might be impossible for... Bitstamp
+* Might be impossible for... Bitstamp and Cryptopia
 
 ### `#orders`
 * *coming soon*
