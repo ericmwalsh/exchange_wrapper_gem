@@ -11,7 +11,7 @@ require "exchange_wrapper/gdax/base"
 require "exchange_wrapper/gemini/base"
 require "exchange_wrapper/kraken/base"
 require "exchange_wrapper/kucoin/base"
-# require "exchange_wrapper/poloniex/base"
+require "exchange_wrapper/poloniex/base"
 
 require "exchange_wrapper/temp/base"
 
