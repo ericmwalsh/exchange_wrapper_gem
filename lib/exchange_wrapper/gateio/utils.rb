@@ -1,14 +1,14 @@
-# ::ExchangeWrapper::Mercatox::Utils
-# https://mercatox.com/
+# ::ExchangeWrapper::Gateio::Utils
+# https://gate.io/api2
 module ExchangeWrapper
-  module Mercatox
+  module Gateio
     class Utils
       class << self
 
         # def holdings(key, secret) # string, string
         #   raise ::Exceptions::InvalidInputError if key.nil? || secret.nil?
         #   holdings = {}
-        #   ::ExchangeWrapper::Mercatox::AccountApi.balances(
+        #   ::ExchangeWrapper::Gateio::AccountApi.balances(
         #     key,
         #     secret
         #   ).each do |currency|
@@ -24,11 +24,11 @@ module ExchangeWrapper
         def symbols
           symbols = []
 
-          fetch_prices.each do |tp, symbol_hash|
-            next unless tp.present? && symbol_hash['isFrozen'] == "0"
+          fetch_trading_pairs.each do |tp|
+            next unless tp.present?
             assets = tp.split('_')
-            base_asset = assets[0]
-            quote_asset = assets[1]
+            base_asset = assets[0].to_s.upcase
+            quote_asset = assets[1].to_s.upcase
 
             symbols << base_asset if base_asset.present?
             symbols << quote_asset if quote_asset.present?
@@ -42,11 +42,11 @@ module ExchangeWrapper
         def trading_pairs
           trading_pairs = []
 
-          fetch_prices.each do |tp, symbol_hash|
-            next unless tp.present? && symbol_hash['isFrozen'] == "0"
+          fetch_trading_pairs.each do |tp|
+            next unless tp.present?
             assets = tp.split('_')
-            base_asset = assets[0]
-            quote_asset = assets[1]
+            base_asset = assets[0].to_s.upcase
+            quote_asset = assets[1].to_s.upcase
             next unless base_asset.present? && quote_asset.present?
 
             trading_pairs << [
@@ -66,14 +66,14 @@ module ExchangeWrapper
           prices = []
 
           fetch_prices.each do |tp, tp_hash|
-            next unless tp.present? && tp_hash['isFrozen'] == "0" && tp_hash['last'].present?
+            next unless tp.present? && tp_hash['last'].present?
             assets = tp.split('_')
-            base_asset = assets[0]
-            quote_asset = assets[1]
+            base_asset = assets[0].to_s.upcase
+            quote_asset = assets[1].to_s.upcase
             next unless base_asset.present? && quote_asset.present?
 
             prices << {
-              'symbol' => "#{assets[0]}/#{assets[1]}",
+              'symbol' => "#{base_asset}/#{quote_asset}",
               'price' => tp_hash['last']
             }
           end
@@ -85,13 +85,13 @@ module ExchangeWrapper
           metadata = []
 
           fetch_prices.each do |tp, tp_hash|
-            next unless tp.present? && tp_hash['isFrozen'] == "0"
+            next unless tp.present?
             assets = tp.split('_')
-            base_asset = assets[0]
-            quote_asset = assets[1]
+            base_asset = assets[0].to_s.upcase
+            quote_asset = assets[1].to_s.upcase
             next unless base_asset.present? && quote_asset.present?
 
-            metadata << tp_hash.merge('symbol' => "#{assets[0]}/#{assets[1]}")
+            metadata << tp_hash.merge('symbol' => "#{base_asset}/#{quote_asset}")
           end
 
           metadata
@@ -99,14 +99,24 @@ module ExchangeWrapper
 
         private
 
-        def fetch_prices
+        def fetch_trading_pairs
           if defined?(::Rails)
-            ::Rails.cache.fetch('ExchangeWrapper/mercatox-public-api-market', expires_in: 30.seconds) do
-              ::ExchangeWrapper::Mercatox::PublicApi.market
+            ::Rails.cache.fetch('ExchangeWrapper/gateio-public-api-pairs', expires_in: 30.seconds) do
+              ::ExchangeWrapper::Gateio::PublicApi.pairs
             end
           else
-            ::ExchangeWrapper::Mercatox::PublicApi.market
-          end['pairs']
+            ::ExchangeWrapper::Gateio::PublicApi.pairs
+          end
+        end
+
+        def fetch_prices
+          if defined?(::Rails)
+            ::Rails.cache.fetch('ExchangeWrapper/gateio-public-api-tickers', expires_in: 30.seconds) do
+              ::ExchangeWrapper::Gateio::PublicApi.tickers
+            end
+          else
+            ::ExchangeWrapper::Gateio::PublicApi.tickers
+          end
         end
 
       end

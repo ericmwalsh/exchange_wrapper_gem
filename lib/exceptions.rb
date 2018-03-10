@@ -31,6 +31,11 @@ module Exceptions
       "Coinbase Error // #{error_object.class.to_s}: #{error_object.message}"
     end
 
+    # {"code"=>3,"message"=>"Error: invalid request"}
+    def gateio_error_message(response_hash) # hash
+      "Gate.io Error // Code: #{response_hash['code']}, Message: #{response_hash['message']}"
+    end
+
     # #<Coinbase::Exchange::NotAuthorizedError: invalid signature>
     def gdax_error_message(error_object) # error_object
       "GDAX Error // #{error_object.class.to_s}: #{error_object.message}"
@@ -114,6 +119,13 @@ module Exceptions
     end
   end
 
+  # gateio
+  class GateioApiInputError < ApiInputError
+    def initialize(error_hash, error_code = API_INPUT) # hash, integer
+      super(gateio_error_message(error_hash), error_code)
+    end
+  end
+
   # gdax
   class GdaxApiInputError < ApiInputError
     def initialize(error_object) # error_object
@@ -158,6 +170,13 @@ module Exceptions
     end
   end
 
+  # gateio
+  class GateioApiRateLimitError < ApiRateLimitError
+    def initialize(error_hash, error_code = RATE_LIMIT)  # hash, integer
+      super(gateio_error_message(error_hash), error_code)
+    end
+  end
+
   # gdax
   class GdaxApiRateLimitError < ApiRateLimitError
     def initialize(error_object) # error_object
@@ -199,6 +218,13 @@ module Exceptions
   class CoinbaseApiServerError < ApiServerError
     def initialize(error_object) # error_object
       super(coinbase_error_message(error_object))
+    end
+  end
+
+  # gateio
+  class GateioApiServerError < ApiServerError
+    def initialize(error_hash, error_code = API_ERROR) # hash, integer
+      super(gateio_error_message(error_hash), error_code)
     end
   end
 
