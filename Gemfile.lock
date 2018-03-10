@@ -2,15 +2,22 @@ PATH
   remote: .
   specs:
     exchange_wrapper (0.1.13)
+      activesupport (~> 5.1)
       coinbase (~> 4.2)
       coinbase-exchange (~> 0.2)
       faraday (~> 0.14)
       faraday_middleware (~> 0.12)
       httparty (~> 0.16)
+      oj (~> 3)
 
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (5.1.5)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (~> 0.7)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     bigdecimal (1.3.4)
@@ -20,6 +27,7 @@ GEM
       bigdecimal
       em-http-request
       faye-websocket
+    concurrent-ruby (1.0.5)
     cookiejar (0.3.3)
     diff-lcs (1.3)
     em-http-request (1.1.5)
@@ -41,8 +49,12 @@ GEM
     http_parser.rb (0.6.0)
     httparty (0.16.0)
       multi_xml (>= 0.5.2)
+    i18n (0.9.5)
+      concurrent-ruby (~> 1.0)
+    minitest (5.11.3)
     multi_xml (0.6.0)
     multipart-post (2.0.0)
+    oj (3.5.0)
     public_suffix (3.0.2)
     rake (10.5.0)
     rspec (3.7.0)
@@ -58,6 +70,9 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
+    thread_safe (0.3.6)
+    tzinfo (1.2.5)
+      thread_safe (~> 0.1)
     websocket-driver (0.7.0)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)

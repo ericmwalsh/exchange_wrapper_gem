@@ -26,7 +26,7 @@ This table shows the methods that are supported per exchange.
 |  [Gemini](https://gemini.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 |  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 |  [KuCoin](https://www.kucoin.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Hard   |    ?
-|  [Mercatox](https://mercatox.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
+|  [Mercatox](https://mercatox.com/)          |     ✘     |     ✔    |        ✔       |     ✔   |     ✔     |     ✘     |    ✘
 |  [Poloniex](https://poloniex.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 
 
@@ -137,10 +137,11 @@ Or install it yourself as:
 
 ### `#backfill`
 * *coming soon*
-* Might be impossible for... Bitstamp and Cryptopia
+* Looks like this may not be implemented/doesn't function for... Bitstamp, Cryptopia, and Mercatox
 
 ### `#orders`
 * *coming soon*
+* Looks like this may not be implemented/doesn't function for... Mercatox
 
 
 ## Contributing
