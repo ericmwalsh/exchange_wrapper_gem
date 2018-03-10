@@ -23,7 +23,7 @@ This table shows the methods that are supported per exchange.
 |  [GDAX](https://www.gdax.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 |  [Gemini](https://gemini.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 |  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
-|  [KuCoin](https://www.kucoin.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
+|  [KuCoin](https://www.kucoin.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Hard   |    ?
 |  [Poloniex](https://poloniex.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
 
 
