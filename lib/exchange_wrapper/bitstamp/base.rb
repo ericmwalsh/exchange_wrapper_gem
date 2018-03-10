@@ -1,6 +1,3 @@
-require 'faraday'
-# require 'faraday_middleware'
-
 # require_relative 'account_api'
 require_relative 'public_api'
 require_relative 'utils'
