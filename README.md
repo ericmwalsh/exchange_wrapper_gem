@@ -19,17 +19,22 @@ This table shows the methods that are supported per exchange.
 |  [Bittrex](https://bittrex.com/)            |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Hard   |    ?
 |  [CEX.io](https://cex.io/)                  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 |  [Coinbase](https://www.coinbase.com/)      |     ✔     |     ✘    |        ✘       |     ✘   |     ✘     |     ✘     |    ?
+|  [COSS.io](https://coss.io/)                |     ✘     |     ✘    |        ✘       |     ✘   |     ✘     |     ✘     |    ✘
 |  [Cryptopia](https://www.cryptopia.co.nz/)  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |     ✘     |    ?
+|  [Gate.io](https://gate.io/)                |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
 |  [GDAX](https://www.gdax.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 |  [Gemini](https://gemini.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 |  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 |  [KuCoin](https://www.kucoin.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Hard   |    ?
+|  [Mercatox](https://mercatox.com/)          |     ?     |     ?    |        ?       |     ?   |     ?     |     ?     |    ?
 |  [Poloniex](https://poloniex.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
 
 
 ### Notes
 1. Coinbase doesn't support methods outside of `#holdings` (get the data via GDAX) and even then `#holdings` *should* be converted to utilize OAuth instead of API Key/Secret.
-2. `#backfill` isn't implemented yet so it is an estimation (Easy/Hard) of the difficulty needed in order to support it.
+2. COSS.io doesn't have an API yet...
+3. `#backfill` isn't implemented yet so it is an estimation (Easy/Hard) of the difficulty needed in order to support it.
+4. `#orders` isn't implemented yet but this shouldn't be so challenging, left it ambiguous (?) for now.
 
 ## Installation
 
