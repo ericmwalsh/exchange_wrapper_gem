@@ -12,22 +12,22 @@ If you have any issues or if you'd like to contribute please visit the **Contrib
 This table shows the methods that are supported per exchange.
 
 
-|  Exchange                                   | #holdings | #symbols | #trading_pairs | #prices | #metadata | #backfill | #orders
-|  :------:                                   | :-------: | :------: | :------------: | :-----: | :-------: | :-------: | :-----:
-|  [Binance](https://www.binance.com/)        |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Hard   |    ?
-|  [Bitstamp](https://www.bitstamp.net/)      |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |     ✘     |    ?
-|  [Bittrex](https://bittrex.com/)            |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Hard   |    ?
-|  [CEX.io](https://cex.io/)                  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
-|  [Coinbase](https://www.coinbase.com/)      |     ✔     |     ✘    |        ✘       |     ✘   |     ✘     |     ✘     |    ?
-|  [COSS.io](https://coss.io/)                |     ✘     |     ✘    |        ✘       |     ✘   |     ✘     |     ✘     |    ✘
-|  [Cryptopia](https://www.cryptopia.co.nz/)  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |     ✘     |    ?
-|  [Gate.io](https://gate.io/)                |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
-|  [GDAX](https://www.gdax.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
-|  [Gemini](https://gemini.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
-|  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
-|  [KuCoin](https://www.kucoin.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Hard   |    ?
-|  [Mercatox](https://mercatox.com/)          |     ✘     |     ✔    |        ✔       |     ✔   |     ✔     |     ✘     |    ✘
-|  [Poloniex](https://poloniex.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    Easy   |    ?
+|  Exchange                                   | #holdings | #symbols | #trading_pairs | #prices | #metadata | #volume | #backfill | #orders
+|  :------:                                   | :-------: | :------: | :------------: | :-----: | :-------: | :-----: | :-------: | :-----:
+|  [Binance](https://www.binance.com/)        |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Hard   |    ?
+|  [Bitstamp](https://www.bitstamp.net/)      |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |     ✘     |    ?
+|  [Bittrex](https://bittrex.com/)            |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Hard   |    ?
+|  [CEX.io](https://cex.io/)                  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
+|  [Coinbase](https://www.coinbase.com/)      |     ✔     |     ✘    |        ✘       |     ✘   |     ✘     |    ?    |     ✘     |    ?
+|  [COSS.io](https://coss.io/)                |     ✘     |     ✘    |        ✘       |     ✘   |     ✘     |    ?    |     ✘     |    ✘
+|  [Cryptopia](https://www.cryptopia.co.nz/)  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |     ✘     |    ?
+|  [Gate.io](https://gate.io/)                |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
+|  [GDAX](https://www.gdax.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
+|  [Gemini](https://gemini.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
+|  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
+|  [KuCoin](https://www.kucoin.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Hard   |    ?
+|  [Mercatox](https://mercatox.com/)          |     ✘     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |     ✘     |    ✘
+|  [Poloniex](https://poloniex.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
 
 
 ### Notes
@@ -134,6 +134,21 @@ Or install it yourself as:
 * This data structure is **NOT** uniform between APIs/across exchanges
 * This may be split into a sub-method for capturing `volume` in the future
 * *GDAX requires a key, secret, and passphrase*
+
+### `#volume`
+```ruby
+    ::ExchangeWrapper::Bittrex::Utils.volume
+  ```
+* ```ruby
+    [
+      {"symbol":"BCH/BTC","volume":"1103.0000"},
+      {"symbol":"EVX/BTC","volume":"1806.5000"},
+      {"symbol":"QSP/BNB","volume":"2124.3021"},
+      {"symbol":"SUB/ETH","volume":"536.1624"}
+    ]
+  ```
+* Symbol and volume must be non `nil` values returned
+* *GDAX requires a yield_md param and a key, secret, and passphrase*
 
 ### `#backfill`
 * *coming soon*
