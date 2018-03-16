@@ -14,7 +14,7 @@ This table shows the methods that are supported per exchange.
 
 |  Exchange                                   | #holdings | #symbols | #trading_pairs | #prices | #metadata | #volume | #backfill | #orders
 |  :------:                                   | :-------: | :------: | :------------: | :-----: | :-------: | :-----: | :-------: | :-----:
-|  [Binance](https://www.binance.com/)        |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Hard   |    ?
+|  [Binance](https://www.binance.com/)        |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Hard   |    ?
 |  [Bitstamp](https://www.bitstamp.net/)      |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |     ✘     |    ?
 |  [Bittrex](https://bittrex.com/)            |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Hard   |    ?
 |  [CEX.io](https://cex.io/)                  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?

@@ -92,7 +92,27 @@ module ExchangeWrapper
         end
 
         def volume
-          #
+          volume = fetch_metadata
+          map = trading_pairs_map
+
+          volume.map! do |md|
+            if md['quoteVolume'].present? && md['volume'].present?
+              mapped_symbol = map[md['symbol']]
+              if mapped_symbol.present?
+                {
+                  'symbol' => mapped_symbol,
+                  'base_volume' => md['volume'],
+                  'quote_volume' => md['quoteVolume']
+                }
+              else
+                nil
+              end
+            else
+              nil
+            end
+          end.compact!
+
+          volume
         end
 
         private
