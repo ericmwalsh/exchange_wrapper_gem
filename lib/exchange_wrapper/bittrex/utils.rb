@@ -90,6 +90,10 @@ module ExchangeWrapper
           metadata
         end
 
+        def volume
+          #
+        end
+
         private
 
         def fetch_market_summaries

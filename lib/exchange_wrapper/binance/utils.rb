@@ -102,6 +102,10 @@ module ExchangeWrapper
           metadata
         end
 
+        def volume
+          #
+        end
+
         private
 
         def trading_pairs_map
