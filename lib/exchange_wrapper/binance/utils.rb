@@ -6,14 +6,14 @@ module ExchangeWrapper
       class << self
 
         def holdings(key, secret) # string, string
-          raise ::Exceptions::InvalidInputError if key.nil? || secret.nil?
+          raise ::Exceptions::InvalidInputError unless key.present? && secret.present?
           holdings = {}
           ::ExchangeWrapper::Binance::AccountApi.account_info(
             key,
             secret
           )['balances'].each do |currency|
             amount = currency['free'].to_f
-            if amount > 0.0 && !currency['asset'].nil?
+            if amount > 0.0 && currency['asset'].present?
               holdings[currency['asset']] = amount
             end
           end
@@ -25,8 +25,6 @@ module ExchangeWrapper
           symbols = []
 
           fetch_symbols.each do |symbol|
-            next if symbol['symbol'] == '123456' # skip dummy symbol data
-            next if symbol['baseAsset'].nil? || symbol['quoteAsset'].nil?
             symbols << symbol['baseAsset']
             symbols << symbol['quoteAsset']
           end
@@ -40,8 +38,6 @@ module ExchangeWrapper
           trading_pairs = []
 
           fetch_symbols.each do |symbol|
-            next if symbol['symbol'] == '123456' # skip dummy symbol data
-            next if symbol['baseAsset'].nil? || symbol['quoteAsset'].nil?
             trading_pairs << [
               "#{symbol['baseAsset']}/#{symbol['quoteAsset']}",
               symbol['baseAsset'],
@@ -55,25 +51,24 @@ module ExchangeWrapper
         end
 
         def prices
-          prices = ::ExchangeWrapper::Binance::PublicApi.prices.sort do |tp_0, tp_1|
-            tp_0['symbol'] <=> tp_1['symbol']
-          end
           # remap the symbols with a '/'
           # e.g. ETHBTC -> ETH/BTC
+          prices = fetch_metadata
           map = trading_pairs_map
-          prices.map! do |tp|
-            if tp['symbol'] == '123456' # skip dummy symbol data
-              nil
-            elsif tp['symbol'].nil? || tp['price'].nil?
-              nil
-            else
-              mapped_symbol = map[tp['symbol']]
-              if mapped_symbol.nil?
-                nil
+
+          prices.map! do |md|
+            if md['lastPrice'].present?
+              mapped_symbol = map[md['symbol']]
+              if mapped_symbol.present?
+                {
+                  'symbol' => mapped_symbol,
+                  'price' => md['lastPrice']
+                }
               else
-                tp.merge!('symbol' => mapped_symbol)
-                tp
+                nil
               end
+            else
+              nil
             end
           end.compact!
 
@@ -81,21 +76,15 @@ module ExchangeWrapper
         end
 
         def metadata
-          metadata = ::ExchangeWrapper::Binance::PublicApi.day_pricing
+          metadata = fetch_metadata
           map = trading_pairs_map
 
           metadata.map! do |md|
-            if md['symbol'] == '123456' # skip dummy symbol data
-              nil
-            elsif md['symbol'].nil?
-              nil
+            mapped_symbol = map[md['symbol']]
+            if mapped_symbol.present?
+              md.merge!('symbol' => mapped_symbol)
             else
-              mapped_symbol = map[md['symbol']]
-              if mapped_symbol.nil?
-                nil
-              else
-                md.merge!('symbol' => mapped_symbol)
-              end
+              nil
             end
           end.compact!
 
@@ -112,13 +101,22 @@ module ExchangeWrapper
           trading_pairs_map = {}
 
           fetch_symbols.each do |symbol|
-            next if symbol['symbol'] == '123456' # skip dummy symbol data
-            next if symbol['symbol'].nil? || symbol['baseAsset'].nil? || symbol['quoteAsset'].nil?
-
             trading_pairs_map[symbol['symbol']] = "#{symbol['baseAsset']}/#{symbol['quoteAsset']}"
           end
 
           trading_pairs_map
+        end
+
+        def fetch_metadata
+          if defined?(::Rails)
+            ::Rails.cache.fetch('ExchangeWrapper/binance-public-api-day-pricing', expires_in: 30.seconds) do
+              ::ExchangeWrapper::Binance::PublicApi.day_pricing
+            end
+          else
+            ::ExchangeWrapper::Binance::PublicApi.day_pricing
+          end.select do |md_hash|
+            md_hash['symbol'].present? && md_hash['symbol'] != '123456' # skip dummy symbol data
+          end
         end
 
         def fetch_symbols
@@ -128,8 +126,19 @@ module ExchangeWrapper
             end
           else
             ::ExchangeWrapper::Binance::PublicApi.exchange_info
-          end['symbols']
+          end['symbols'].select do |symbol|
+            if symbol['symbol'] == '123456' # skip dummy symbol data
+              false
+            elsif !symbol['symbol'].present?
+              false
+            elsif !symbol['baseAsset'].present? || !symbol['quoteAsset'].present?
+              false
+            else
+              true
+            end
+          end
         end
+
       end
     end
   end
