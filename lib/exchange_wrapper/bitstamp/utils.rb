@@ -61,7 +61,8 @@ module ExchangeWrapper
           tp_symbols = tps.map {|tp| tp['url_symbol']}
 
           fetch_tickers(tp_symbols).each.with_index do |market, i|
-            next if market.nil? || market['last'].nil? || tps[i]['name'].nil?
+            next unless market.present? && tps[i]['name'].present?
+            next unless market['last'].present?
             prices << {
               'symbol' => tps[i]['name'],
               'price' => market['last']
@@ -77,11 +78,29 @@ module ExchangeWrapper
           tp_symbols = tps.map {|tp| tp['url_symbol']}
 
           fetch_tickers(tp_symbols).each.with_index do |market, i|
-            next if market.nil? || tps[i]['name'].nil?
+            next unless market.present? && tps[i]['name'].present?
             metadata << market.merge('symbol' => tps[i]['name'])
           end
 
           metadata
+        end
+
+        def volume
+          volume = []
+          tps = fetch_trading_pairs
+          tp_symbols = tps.map {|tp| tp['url_symbol']}
+
+          fetch_tickers(tp_symbols).each.with_index do |market, i|
+            next unless market.present? && tps[i]['name'].present?
+            next unless market['vwap'].present? && market['volume'].present?
+            volume << {
+              'symbol' => tps[i]['name'],
+              'base_volume' => market['volume'],
+              'quote_volume' => market['vwap'].to_f * market['volume'].to_f
+            }
+          end
+
+          volume
         end
 
         private
