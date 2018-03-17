@@ -16,7 +16,7 @@ This table shows the methods that are supported per exchange.
 |  :------:                                   | :-------: | :------: | :------------: | :-----: | :-------: | :-----: | :-------: | :-----:
 |  [Binance](https://www.binance.com/)        |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Hard   |    ?
 |  [Bitstamp](https://www.bitstamp.net/)      |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |     ✘     |    ?
-|  [Bittrex](https://bittrex.com/)            |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Hard   |    ?
+|  [Bittrex](https://bittrex.com/)            |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Hard   |    ?
 |  [CEX.io](https://cex.io/)                  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
 |  [Coinbase](https://www.coinbase.com/)      |     ✔     |     ✘    |        ✘       |     ✘   |     ✘     |    ?    |     ✘     |    ?
 |  [COSS.io](https://coss.io/)                |     ✘     |     ✘    |        ✘       |     ✘   |     ✘     |    ?    |     ✘     |    ✘

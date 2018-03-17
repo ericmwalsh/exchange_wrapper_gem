@@ -57,15 +57,10 @@ module ExchangeWrapper
 
         def prices
           prices = []
-          fetch_market_summaries.each do |market|
-            if !market['MarketName'].nil? && !market['Last'].nil?
-              formatted_symbol = begin
-                currencies = market['MarketName'].split('-')
-                "#{currencies[1]}/#{currencies[0]}"
-              end
-
+          fetch_metadata.each do |market|
+            if market['Last'].present?
               prices << {
-                'symbol' => formatted_symbol,
+                'symbol' => market['symbol'],
                 'price' => market['Last']
               }
             end
@@ -75,35 +70,44 @@ module ExchangeWrapper
         end
 
         def metadata
-          metadata = []
-          fetch_market_summaries.each do |market|
-            if !market['MarketName'].nil?
-              formatted_symbol = begin
-                currencies = market['MarketName'].split('-')
-                "#{currencies[1]}/#{currencies[0]}"
-              end
-
-              metadata << market.merge('symbol' => formatted_symbol)
-            end
-          end
-
-          metadata
+          fetch_metadata
         end
 
         def volume
-          #
+          volume = []
+          fetch_metadata.each do |market|
+            if market['BaseVolume'].present? && market['Volume'].present?
+              # we have swapped the order of the currencies in the
+              # bittrex pairs which is why the volume and base_volume
+              # seem to be switched
+              volume << {
+                'symbol' => market['symbol'],
+                'base_volume' => market['Volume'],
+                'quote_volume' => market['BaseVolume']
+              }
+            end
+          end
+
+          volume
         end
 
         private
 
-        def fetch_market_summaries
+        def fetch_metadata
           if defined?(::Rails)
             ::Rails.cache.fetch('bittrex-public-api-get-market-summaries', expires_in: 30.seconds) do
               ::ExchangeWrapper::Bittrex::PublicApi.get_market_summaries
             end
           else
             ::ExchangeWrapper::Bittrex::PublicApi.get_market_summaries
-          end['result']
+          end['result'].map do |md_hash|
+            assets = md_hash['MarketName'].split('-')
+            if md_hash['MarketName'].present? && assets[0].present? && assets[1].present?
+              md_hash.merge('symbol' => "#{assets[1]}/#{assets[0]}")
+            else
+              nil
+            end
+          end.compact
         end
 
       end
