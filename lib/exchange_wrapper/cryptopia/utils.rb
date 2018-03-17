@@ -39,9 +39,6 @@ module ExchangeWrapper
           trading_pairs = []
 
           fetch_trading_pairs.each do |tp_hash|
-            next if tp_hash['Status'] != 'OK'
-            next if tp_hash['Label'].nil? || tp_hash['Symbol'].nil? || tp_hash['BaseSymbol'].nil?
-
             trading_pairs << [
               tp_hash['Label'],
               tp_hash['Symbol'],
@@ -57,14 +54,11 @@ module ExchangeWrapper
 
         def prices
           prices = []
-          tps = fetch_trading_pairs
-          valid_tps = tps.map do |tp|
-            tp['Status'] == 'OK' ? tp['Label'] : nil
-          end.compact
+          tps = fetch_trading_pairs.map {|tp| tp['Label']}
 
           fetch_prices.each do |market_hash|
-            next if market_hash['Label'].nil? || market_hash['LastPrice'].nil?
-            next unless valid_tps.include? market_hash['Label']
+            next unless market_hash['LastPrice'].present?
+            next unless tps.include? market_hash['Label']
 
             prices << {
               'symbol' => market_hash['Label'],
@@ -77,19 +71,36 @@ module ExchangeWrapper
 
         def metadata
           metadata = []
-          tps = fetch_trading_pairs
-          valid_tps = tps.map do |tp|
-            tp['Status'] == 'OK' ? tp['Label'] : nil
-          end.compact
+          tps = fetch_trading_pairs.map {|tp| tp['Label']}
 
           fetch_prices.each do |market_hash|
-            next if market_hash['Label'].nil?
-            next unless valid_tps.include? market_hash['Label']
+            next unless tps.include? market_hash['Label']
 
             metadata << market_hash.merge('symbol' => market_hash['Label'])
           end
 
           metadata
+        end
+
+        def volume
+          volume = []
+          tps = fetch_trading_pairs.map {|tp| tp['Label']}
+
+          fetch_prices.each do |market_hash|
+            next unless market_hash['Volume'].present? && market_hash['BaseVolume'].present?
+            next unless tps.include? market_hash['Label']
+
+            # confusing... Cryptopia uses the same order for symbols
+            # (base_asset/quote_asset) but they call their quote_asset
+            # the base_asset
+            volume << {
+              'symbol' => market_hash['Label'],
+              'base_volume' => market_hash['Volume'],
+              'quote_volume' => market_hash['BaseVolume']
+            }
+          end
+
+          volume
         end
 
         private
@@ -111,7 +122,10 @@ module ExchangeWrapper
             end
           else
             ::ExchangeWrapper::Cryptopia::PublicApi.get_trade_pairs
-          end['Data']
+          end['Data'].select do |tp_hash|
+            tp_hash['Status'] == 'OK' && tp_hash['Label'].present? &&
+              tp_hash['Symbol'].present? || tp_hash['BaseSymbol'].present?
+          end
         end
 
         def fetch_prices
@@ -121,7 +135,9 @@ module ExchangeWrapper
             end
           else
             ::ExchangeWrapper::Cryptopia::PublicApi.get_markets
-          end['Data']
+          end['Data'].select do |p_hash|
+            p_hash['Label'].present?
+          end
         end
 
       end
