@@ -17,7 +17,7 @@ This table shows the methods that are supported per exchange.
 |  [Binance](https://www.binance.com/)        |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Hard   |    ?
 |  [Bitstamp](https://www.bitstamp.net/)      |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |     ✘     |    ?
 |  [Bittrex](https://bittrex.com/)            |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Hard   |    ?
-|  [CEX.io](https://cex.io/)                  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
+|  [CEX.io](https://cex.io/)                  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
 |  [Coinbase](https://www.coinbase.com/)      |     ✔     |     ✘    |        ✘       |     ✘   |     ✘     |    ?    |     ✘     |    ?
 |  [COSS.io](https://coss.io/)                |     ✘     |     ✘    |        ✘       |     ✘   |     ✘     |    ?    |     ✘     |    ✘
 |  [Cryptopia](https://www.cryptopia.co.nz/)  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |     ✘     |    ?
@@ -137,17 +137,17 @@ Or install it yourself as:
 
 ### `#volume`
 ```ruby
-    ::ExchangeWrapper::Bittrex::Utils.volume
+    ::ExchangeWrapper::Cexio::Utils.volume
   ```
 * ```ruby
     [
-      {"symbol":"BCH/BTC","volume":"1103.0000"},
-      {"symbol":"EVX/BTC","volume":"1806.5000"},
-      {"symbol":"QSP/BNB","volume":"2124.3021"},
-      {"symbol":"SUB/ETH","volume":"536.1624"}
+      {"symbol":"BTC/USD","base_volume":"1335.28640364","quote_volume":"10558777.2367833"},
+      {"symbol":"ETH/USD","base_volume":"2894.99957400","quote_volume":"1595144.765274"},
+      {"symbol":"BCH/USD","base_volume":"283.50156497","quote_volume":"270176.99141641"}
     ]
   ```
-* Symbol and volume must be non `nil` values returned
+* Symbol, base_volume, and quote_volume must be non `nil` values returned
+* CEX.io quote_volume is an ESTIMATE using the `low` price (no `vwap` provided)
 * *GDAX requires a yield_md param and a key, secret, and passphrase*
 
 ### `#backfill`

@@ -38,9 +38,8 @@ module ExchangeWrapper
         def trading_pairs
           trading_pairs = []
 
-          fetch_prices(symbols).each do |tp_hash|
-            next if tp_hash['pair'].nil?
-            assets = tp_hash['pair'].split(':')
+          fetch_metadata(symbols).each do |md_hash|
+            assets = md_hash['pair'].split(':')
 
             trading_pairs << [
               "#{assets[0]}/#{assets[1]}",
@@ -58,13 +57,12 @@ module ExchangeWrapper
         def prices
           prices = []
 
-          fetch_prices(symbols).each do |tp_hash|
-            next if tp_hash['pair'].nil? || tp_hash['last'].nil?
-            assets = tp_hash['pair'].split(':')
+          fetch_metadata(symbols).each do |md_hash|
+            next unless md_hash['last'].present?
 
             prices << {
-              'symbol' => "#{assets[0]}/#{assets[1]}",
-              'price' => tp_hash['last']
+              'symbol' => md_hash['symbol'],
+              'price' => md_hash['last']
             }
           end
 
@@ -72,16 +70,25 @@ module ExchangeWrapper
         end
 
         def metadata
-          metadata = []
+          fetch_metadata(symbols)
+        end
 
-          fetch_prices(symbols).each do |tp_hash|
-            next if tp_hash['pair'].nil?
-            assets = tp_hash['pair'].split(':')
+        def volume
+          volume = []
 
-            metadata << tp_hash.merge('symbol' => "#{assets[0]}/#{assets[1]}")
+          fetch_metadata(symbols).each do |md_hash|
+            # because no vwap is provided we must default to using the low price
+            # safer to underestimate than to overestimate
+            next unless md_hash['volume'].present? && md_hash['low'].present?
+
+            volume << {
+              'symbol' => md_hash['symbol'],
+              'base_volume' => md_hash['volume'],
+              'quote_volume' => md_hash['low'].to_f * md_hash['volume'].to_f
+            }
           end
 
-          metadata
+          volume
         end
 
         private
@@ -96,14 +103,21 @@ module ExchangeWrapper
           end['data']['pairs']
         end
 
-        def fetch_prices(symbols) # array of strings
+        def fetch_metadata(symbols) # array of strings
           if defined?(::Rails)
             ::Rails.cache.fetch('ExchangeWrapper/cexio-public-api-tickers', expires_in: 30.seconds) do
               ::ExchangeWrapper::Cexio::PublicApi.tickers(symbols)
             end
           else
             ::ExchangeWrapper::Cexio::PublicApi.tickers(symbols)
-          end['data']
+          end['data'].map do |md_hash|
+            assets = md_hash['pair'].split(':')
+            if md_hash['pair'].present? && assets[0].present? && assets[1].present?
+              md_hash.merge('symbol' => "#{assets[0]}/#{assets[1]}")
+            else
+              nil
+            end
+          end.compact
         end
 
       end
