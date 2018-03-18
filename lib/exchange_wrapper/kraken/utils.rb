@@ -59,19 +59,13 @@ module ExchangeWrapper
 
         def prices
           prices = []
-          symbols_map = fetch_symbols
-          tps = fetch_trading_pairs
-          tp_symbols = tps.keys.join(',')
 
-          fetch_tickers(tp_symbols).each do |market, market_hash|
-            next if market.nil? || market_hash['c'][0].nil?
-            base_asset = symbols_map[tps[market]['base']]['altname']
-            quote_asset = symbols_map[tps[market]['quote']]['altname']
-            next if base_asset.nil? || quote_asset.nil?
+          fetch_metadata.each do |md_hash|
+            next unless md_hash['c'][0].present?
 
             prices << {
-              'symbol' => "#{base_asset}/#{quote_asset}",
-              'price' => market_hash['c'][0]
+              'symbol' => md_hash['symbol'],
+              'price' => md_hash['c'][0]
             }
           end
 
@@ -79,21 +73,23 @@ module ExchangeWrapper
         end
 
         def metadata
-          metadata = []
-          symbols_map = fetch_symbols
-          tps = fetch_trading_pairs
-          tp_symbols = tps.keys.join(',')
+          fetch_metadata
+        end
 
-          fetch_tickers(tp_symbols).each do |market, market_hash|
-            next if market.nil?
-            base_asset = symbols_map[tps[market]['base']]['altname']
-            quote_asset = symbols_map[tps[market]['quote']]['altname']
-            next if base_asset.nil? || quote_asset.nil?
+        def volume
+          volume = []
 
-            metadata << market_hash.merge('symbol' => "#{base_asset}/#{quote_asset}")
+          fetch_metadata.each do |md_hash|
+            next unless md_hash['v'][1].present? && md_hash['p'][1].present?
+
+            volume << {
+              'symbol' => md_hash['symbol'],
+              'base_volume' => md_hash['v'][1],
+              'quote_volume' => md_hash['p'][1].to_f * md_hash['v'][1].to_f
+            }
           end
 
-          metadata
+          volume
         end
 
         private
@@ -118,14 +114,29 @@ module ExchangeWrapper
           end['result'].select {|symbol, symbol_hash| !symbol.include? '.d'} # skip .d tickers
         end
 
-        def fetch_tickers(symbols) # string, comma separated
+        def fetch_metadata
+          metadata  = []
+
+          symbols_map = fetch_symbols
+          tps = fetch_trading_pairs
+          symbols = tps.keys.join(',')
+
           if defined?(::Rails)
             ::Rails.cache.fetch('ExchangeWrapper/kraken-public-api-tickers', expires_in: 30.seconds) do
               ::ExchangeWrapper::Kraken::PublicApi.ticker(symbols)
             end
           else
             ::ExchangeWrapper::Kraken::PublicApi.ticker(symbols)
-          end['result']
+          end['result'].each do |market, md_hash|
+            next unless market.present?
+            base_asset = symbols_map[tps[market]['base']]['altname']
+            quote_asset = symbols_map[tps[market]['quote']]['altname']
+            next unless base_asset.present? && quote_asset.present?
+
+            metadata << md_hash.merge('symbol' => "#{base_asset}/#{quote_asset}")
+          end
+
+          metadata
         end
 
       end

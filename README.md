@@ -24,7 +24,7 @@ This table shows the methods that are supported per exchange.
 |  [Gate.io](https://gate.io/)                |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
 |  [GDAX](https://www.gdax.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
 |  [Gemini](https://gemini.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
-|  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
+|  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
 |  [KuCoin](https://www.kucoin.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Hard   |    ?
 |  [Mercatox](https://mercatox.com/)          |     ✘     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |     ✘     |    ✘
 |  [Poloniex](https://poloniex.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
