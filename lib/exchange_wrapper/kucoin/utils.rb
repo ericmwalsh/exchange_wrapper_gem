@@ -40,7 +40,7 @@ module ExchangeWrapper
 
           fetch_metadata.each do |md_hash|
             trading_pairs << [
-              "#{base_asset}/#{quote_asset}",
+              md_hash['symbol'],
               md_hash['coinType'],
               md_hash['coinTypePair']
             ]
