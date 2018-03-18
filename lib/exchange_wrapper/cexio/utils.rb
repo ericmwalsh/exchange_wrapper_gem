@@ -111,7 +111,7 @@ module ExchangeWrapper
           else
             ::ExchangeWrapper::Cexio::PublicApi.tickers(symbols)
           end['data'].map do |md_hash|
-            assets = md_hash['pair'].split(':')
+            assets = md_hash['pair'].to_s.split(':')
             if md_hash['pair'].present? && assets[0].present? && assets[1].present?
               md_hash.merge('symbol' => "#{assets[0]}/#{assets[1]}")
             else

@@ -25,7 +25,6 @@ module ExchangeWrapper
           symbols = []
 
           fetch_trading_pairs.each do |market|
-            next if market['name'].nil? || market['trading'] != 'Enabled'
             market_symbols = market['name'].split('/')
             symbols << market_symbols[0]
             symbols << market_symbols[1]
@@ -40,7 +39,6 @@ module ExchangeWrapper
           trading_pairs = []
 
           fetch_trading_pairs.each do |market|
-            next if market['name'].nil? || market['trading'] != 'Enabled'
             market_symbols = market['name'].split('/')
             trading_pairs << [
               market['name'],
@@ -112,6 +110,10 @@ module ExchangeWrapper
             end
           else
             ::ExchangeWrapper::Bitstamp::PublicApi.trading_pairs
+          end.select do |tp_hash|
+            assets = tp_hash['name'].to_s.split('/')
+            tp_hash['name'].present? && assets[0].present? &&
+              assets[1].present? && tp_hash['trading'] == 'Enabled'
           end
         end
 

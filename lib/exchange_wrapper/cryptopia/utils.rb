@@ -25,8 +25,8 @@ module ExchangeWrapper
           symbols = []
 
           fetch_symbols.each do |symbol_hash|
-            next if symbol_hash['Status'] != 'OK'
-            next if symbol_hash['Symbol'].nil?
+            next unless symbol_hash['Status'] == 'OK'
+            next unless symbol_hash['Symbol'].present?
             symbols << symbol_hash['Symbol']
           end
 
@@ -56,7 +56,7 @@ module ExchangeWrapper
           prices = []
           tps = fetch_trading_pairs.map {|tp| tp['Label']}
 
-          fetch_prices.each do |market_hash|
+          fetch_metadata.each do |market_hash|
             next unless market_hash['LastPrice'].present?
             next unless tps.include? market_hash['Label']
 
@@ -73,7 +73,7 @@ module ExchangeWrapper
           metadata = []
           tps = fetch_trading_pairs.map {|tp| tp['Label']}
 
-          fetch_prices.each do |market_hash|
+          fetch_metadata.each do |market_hash|
             next unless tps.include? market_hash['Label']
 
             metadata << market_hash.merge('symbol' => market_hash['Label'])
@@ -86,7 +86,7 @@ module ExchangeWrapper
           volume = []
           tps = fetch_trading_pairs.map {|tp| tp['Label']}
 
-          fetch_prices.each do |market_hash|
+          fetch_metadata.each do |market_hash|
             next unless market_hash['Volume'].present? && market_hash['BaseVolume'].present?
             next unless tps.include? market_hash['Label']
 
@@ -124,19 +124,19 @@ module ExchangeWrapper
             ::ExchangeWrapper::Cryptopia::PublicApi.get_trade_pairs
           end['Data'].select do |tp_hash|
             tp_hash['Status'] == 'OK' && tp_hash['Label'].present? &&
-              tp_hash['Symbol'].present? || tp_hash['BaseSymbol'].present?
+              tp_hash['Symbol'].present? && tp_hash['BaseSymbol'].present?
           end
         end
 
-        def fetch_prices
+        def fetch_metadata
           if defined?(::Rails)
             ::Rails.cache.fetch('ExchangeWrapper/cryptopia-public-api-get-markets', expires_in: 30.seconds) do
               ::ExchangeWrapper::Cryptopia::PublicApi.get_markets
             end
           else
             ::ExchangeWrapper::Cryptopia::PublicApi.get_markets
-          end['Data'].select do |p_hash|
-            p_hash['Label'].present?
+          end['Data'].select do |md_hash|
+            md_hash['Label'].present?
           end
         end
 

@@ -147,9 +147,7 @@ module ExchangeWrapper
           else
             ::ExchangeWrapper::Binance::PublicApi.exchange_info
           end['symbols'].select do |symbol|
-            if symbol['symbol'] == '123456' # skip dummy symbol data
-              false
-            elsif !symbol['symbol'].present?
+            if !symbol['symbol'].present? || symbol['symbol'] == '123456' # skip dummy symbol data
               false
             elsif !symbol['baseAsset'].present? || !symbol['quoteAsset'].present?
               false

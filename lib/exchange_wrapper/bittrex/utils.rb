@@ -101,7 +101,7 @@ module ExchangeWrapper
           else
             ::ExchangeWrapper::Bittrex::PublicApi.get_market_summaries
           end['result'].map do |md_hash|
-            assets = md_hash['MarketName'].split('-')
+            assets = md_hash['MarketName'].to_s.split('-')
             if md_hash['MarketName'].present? && assets[0].present? && assets[1].present?
               md_hash.merge('symbol' => "#{assets[1]}/#{assets[0]}")
             else
