@@ -6,7 +6,7 @@ module ExchangeWrapper
       class << self
 
         def holdings(key, secret, passphrase) # string, string, string
-          raise ::Exceptions::InvalidInputError if key.nil? || secret.nil? || passphrase.nil?
+          raise ::Exceptions::InvalidInputError unless key.present? && secret.present? && passphrase.present?
           holdings = {}
           ::ExchangeWrapper::Gdax::AccountApi.accounts(
             key,
@@ -14,7 +14,7 @@ module ExchangeWrapper
             passphrase
           ).each do |currency|
             amount = currency['available'].to_f
-            if amount > 0.0 && !currency['currency'].nil?
+            if amount > 0.0 && currency['currency'].present?
               holdings[currency['currency']] = amount
             end
           end
@@ -27,7 +27,7 @@ module ExchangeWrapper
           secret = ENV['GDAX_API_SECRET'],
           passphrase = ENV['GDAX_API_PASSPHRASE']
         ) # string, string, string
-          raise ::Exceptions::InvalidInputError if key.nil? || secret.nil? || passphrase.nil?
+        raise ::Exceptions::InvalidInputError unless key.present? && secret.present? && passphrase.present?
           symbols = []
 
           ::ExchangeWrapper::Gdax::PublicApi.currencies(
@@ -50,7 +50,7 @@ module ExchangeWrapper
           secret = ENV['GDAX_API_SECRET'],
           passphrase = ENV['GDAX_API_PASSPHRASE']
         ) # string, string, string
-          raise ::Exceptions::InvalidInputError if key.nil? || secret.nil? || passphrase.nil?
+        raise ::Exceptions::InvalidInputError unless key.present? && secret.present? && passphrase.present?
           trading_pairs = []
 
           fetch_products(key, secret, passphrase).each do |product|
@@ -69,20 +69,76 @@ module ExchangeWrapper
         end
 
         def prices(
-          yield_md = false,
           key = ENV['GDAX_API_KEY'],
           secret = ENV['GDAX_API_SECRET'],
           passphrase = ENV['GDAX_API_PASSPHRASE']
-        ) # boolean, string, string, string
+        ) # string, string, string
           prices = []
-          metadata = []
-          tps = if key.nil? || secret.nil? || passphrase.nil?
-            []
+
+          if defined?(::Rails)
+            ::Rails.cache.read('ExchangeWrapper/gdax-utils-metadata') || fetch_metadata(key, secret, passphrase)
           else
-            trading_pairs(key, secret, passphrase)
+            fetch_metadata(key, secret, passphrase)
+          end.each do |md_hash|
+            next unless md_hash['price'].present?
+            prices << {
+              'symbol' => md_hash['symbol'],
+              'price' => md_hash['price']
+            }
           end
 
-          if defined?(::Rails) && tps
+          prices
+        end
+
+        def metadata(
+          key = ENV['GDAX_API_KEY'],
+          secret = ENV['GDAX_API_SECRET'],
+          passphrase = ENV['GDAX_API_PASSPHRASE']
+        ) # string, string, string
+          if defined?(::Rails)
+            ::Rails.cache.read('ExchangeWrapper/gdax-utils-metadata') || fetch_metadata(key, secret, passphrase)
+          else
+            fetch_metadata(key, secret, passphrase)
+          end
+        end
+
+        def volume(
+          key = ENV['GDAX_API_KEY'],
+          secret = ENV['GDAX_API_SECRET'],
+          passphrase = ENV['GDAX_API_PASSPHRASE']
+        ) # string, string, string
+          volume = []
+          if defined?(::Rails)
+            ::Rails.cache.read('ExchangeWrapper/gdax-utils-metadata') || fetch_metadata(key, secret, passphrase)
+          else
+            fetch_metadata(key, secret, passphrase)
+          end.each do |md_hash|
+            next unless md_hash['volume_24h'].present? && md_hash['low_24h'].present?
+            # have to use low to guess quote_volume because no vwap present
+            # and no quote volume present
+            volume  << {
+              'symbol' => md_hash['symbol'],
+              'base_volume' => md_hash['volume_24h'],
+              'quote_volume' => md_hash['price'].to_f * md_hash['volume_24h'].to_f
+            }
+          end
+
+          volume
+        end
+
+        private
+
+        def fetch_metadata(
+          key = ENV['GDAX_API_KEY'],
+          secret = ENV['GDAX_API_SECRET'],
+          passphrase = ENV['GDAX_API_PASSPHRASE']
+        ) # string, string, string
+          raise ::Exceptions::InvalidInputError unless key.present? && secret.present? && passphrase.present?
+
+          metadata = []
+          tps = trading_pairs(key, secret, passphrase)
+
+          if tps.present?
             # [ ['BCHBTC', 'BCH', 'BTC'] ]
             products = tps.map {|tp| "#{tp[1]}-#{tp[2]}"}
             ws = ::ExchangeWrapper::Gdax::Websocket.new(
@@ -100,10 +156,6 @@ module ExchangeWrapper
             metadata << resp.merge(
               'symbol' => hyphenated_symbol
             )
-            prices << {
-              'symbol' => hyphenated_symbol,
-              'price' => resp['price']
-            }
 
             count+=1
             ws.stop! if count == products.size
@@ -125,29 +177,15 @@ module ExchangeWrapper
             end
           end
 
-          if yield_md
-            metadata
-          else
-            prices
-          end
+          metadata
         end
 
-        def metadata(
+        def fetch_products(
           key = ENV['GDAX_API_KEY'],
           secret = ENV['GDAX_API_SECRET'],
           passphrase = ENV['GDAX_API_PASSPHRASE']
         ) # string, string, string
-          if defined?(::Rails)
-            ::Rails.cache.read('ExchangeWrapper/gdax-utils-metadata') || prices(true)
-          else
-            prices(true, key, secret, passphrase)
-          end
-        end
-
-        private
-
-        def fetch_products(key, secret, passphrase) # string, string, string
-          raise ::Exceptions::InvalidInputError if key.nil? || secret.nil? || passphrase.nil?
+          raise ::Exceptions::InvalidInputError unless key.present? && secret.present? && passphrase.present?
           if defined?(::Rails)
             ::Rails.cache.fetch('ExchangeWrapper/gdax-public-api-products', expires_in: 29.minutes) do
               ::ExchangeWrapper::Gdax::PublicApi.products(

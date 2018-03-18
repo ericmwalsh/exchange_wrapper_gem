@@ -22,7 +22,7 @@ This table shows the methods that are supported per exchange.
 |  [COSS.io](https://coss.io/)                |     ✘     |     ✘    |        ✘       |     ✘   |     ✘     |    ✘    |     ✘     |    ✘
 |  [Cryptopia](https://www.cryptopia.co.nz/)  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |     ✘     |    ?
 |  [Gate.io](https://gate.io/)                |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
-|  [GDAX](https://www.gdax.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
+|  [GDAX](https://www.gdax.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
 |  [Gemini](https://gemini.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
 |  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
 |  [KuCoin](https://www.kucoin.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Hard   |    ?
