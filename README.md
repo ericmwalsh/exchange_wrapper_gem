@@ -23,7 +23,7 @@ This table shows the methods that are supported per exchange.
 |  [Cryptopia](https://www.cryptopia.co.nz/)  |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |     ✘     |    ?
 |  [Gate.io](https://gate.io/)                |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
 |  [GDAX](https://www.gdax.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
-|  [Gemini](https://gemini.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
+|  [Gemini](https://gemini.com/)              |     ✔     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
 |  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
 |  [KuCoin](https://www.kucoin.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Hard   |    ?
 |  [Mercatox](https://mercatox.com/)          |     ✘     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |     ✘     |    ✘
@@ -115,7 +115,7 @@ Or install it yourself as:
     ]
   ```
 * Symbol and price must be non `nil` values returned
-* *GDAX requires a yield_md param and a key, secret, and passphrase*
+* *GDAX requires a key, secret, and passphrase*
 
 ### `#metadata`
 * ```ruby
@@ -147,8 +147,8 @@ Or install it yourself as:
     ]
   ```
 * Symbol, base_volume, and quote_volume must be non `nil` values returned
-* CEX.io quote_volume is an ESTIMATE using the `low` price (no `vwap` provided)
-* *GDAX requires a yield_md param and a key, secret, and passphrase*
+* CEX.io & GDAX quote_volume is an ESTIMATE using the `low` price (no `quote_volume` or `vwap` provided)
+* *GDAX requires a key, secret, and passphrase*
 
 ### `#backfill`
 * *coming soon*

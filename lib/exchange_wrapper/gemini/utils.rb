@@ -6,14 +6,14 @@ module ExchangeWrapper
       class << self
 
         def holdings(key, secret) # string, string
-          raise ::Exceptions::InvalidInputError if key.nil? || secret.nil?
+          raise ::Exceptions::InvalidInputError unless key.present? && secret.present?
           holdings = {}
           ::ExchangeWrapper::Gemini::AccountApi.balances(
             key,
             secret
           ).each do |currency|
             amount = currency['available'].to_f
-            if amount > 0.0 && !currency['currency'].nil?
+            if amount > 0.0 && currency['currency'].present?
               holdings[currency['currency']] = amount
             end
           end
@@ -24,9 +24,8 @@ module ExchangeWrapper
         def symbols
           symbols = []
 
-          fetch_tickers(fetch_symbols).each do |market|
+          fetch_metadata(fetch_symbols).each do |market|
             market_symbols = market['volume'].keys - ['timestamp']
-            next if market_symbols.size == 0
             symbols << market_symbols[0]
             symbols << market_symbols[1]
           end
@@ -39,9 +38,8 @@ module ExchangeWrapper
         def trading_pairs
           trading_pairs = []
 
-          fetch_tickers(fetch_symbols).each do |market|
+          fetch_metadata(fetch_symbols).each do |market|
             market_symbols = market['volume'].keys - ['timestamp']
-            next if market_symbols.size == 0
             trading_pairs << [
               "#{market_symbols[0]}/#{market_symbols[1]}",
               market_symbols[0],
@@ -57,11 +55,10 @@ module ExchangeWrapper
         def prices
           prices = []
 
-          fetch_tickers(fetch_symbols).each do |market|
-            market_symbols = market['volume'].keys - ['timestamp']
-            next if market_symbols.size == 0 || market['last'].nil?
+          fetch_metadata(fetch_symbols).each do |market|
+            next unless market['last'].present?
             prices << {
-              'symbol' => "#{market_symbols[0]}/#{market_symbols[1]}",
+              'symbol' => market['symbol'],
               'price' => market['last']
             }
           end
@@ -70,15 +67,26 @@ module ExchangeWrapper
         end
 
         def metadata
-          metadata = []
+          fetch_metadata(fetch_symbols)
+        end
 
-          fetch_tickers(fetch_symbols).each do |market|
-            market_symbols = market['volume'].keys - ['timestamp']
-            next if market_symbols.size == 0
-            metadata << market.merge('symbol' => "#{market_symbols[0]}/#{market_symbols[1]}")
+        def volume
+          volume = []
+
+          fetch_metadata(fetch_symbols).each do |market|
+            assets = market['symbol'].split('/')
+            base_volume = market['volume'][assets[0]]
+            quote_volume = market['volume'][assets[1]]
+            next unless base_volume.present? && quote_volume.present?
+
+            volume << {
+              'symbol' => market['symbol'],
+              'base_volume' => base_volume,
+              'quote_volume' => quote_volume
+            }
           end
 
-          metadata
+          volume
         end
 
         private
@@ -90,29 +98,34 @@ module ExchangeWrapper
             end
           else
             ::ExchangeWrapper::Gemini::PublicApi.symbols
+          end.select do |symbol|
+            symbol.present?
           end
         end
 
-        def fetch_tickers(symbols) # array of strings
+        def fetch_metadata(symbols) # array of strings
           if defined?(::Rails)
             symbols.map do |symbol|
-              if symbol.nil?
-                nil
-              else
-                ::Rails.cache.fetch("ExchangeWrapper/gemini-public-api-ticker-#{symbol}", expires_in: 30.seconds) do
-                  ::ExchangeWrapper::Gemini::PublicApi.ticker(symbol)
-                end
-              end
-            end.compact
-          else
-            symbols.map do |symbol|
-              if symbol.nil?
-                nil
-              else
+              ::Rails.cache.fetch("ExchangeWrapper/gemini-public-api-ticker-#{symbol}", expires_in: 30.seconds) do
                 ::ExchangeWrapper::Gemini::PublicApi.ticker(symbol)
               end
-            end.compact
-          end
+            end
+          else
+            symbols.map do |symbol|
+              ::ExchangeWrapper::Gemini::PublicApi.ticker(symbol)
+            end
+          end.map do |md_hash|
+            if md_hash.present? && md_hash['volume'].present?
+              market_symbols = md_hash['volume'].keys - ['timestamp']
+              if market_symbols.size == 0
+                nil
+              else
+                md_hash.merge('symbol' => "#{market_symbols[0]}/#{market_symbols[1]}")
+              end
+            else
+              nil
+            end
+          end.compact
         end
 
       end
