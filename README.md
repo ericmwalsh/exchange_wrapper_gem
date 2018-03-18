@@ -27,7 +27,7 @@ This table shows the methods that are supported per exchange.
 |  [Kraken](https://www.kraken.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
 |  [KuCoin](https://www.kucoin.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Hard   |    ?
 |  [Mercatox](https://mercatox.com/)          |     ✘     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |     ✘     |    ✘
-|  [Poloniex](https://poloniex.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ?    |    Easy   |    ?
+|  [Poloniex](https://poloniex.com/)          |     ?     |     ✔    |        ✔       |     ✔   |     ✔     |    ✔    |    Easy   |    ?
 
 
 ### Notes

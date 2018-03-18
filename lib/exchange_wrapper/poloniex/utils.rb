@@ -25,8 +25,8 @@ module ExchangeWrapper
           symbols = []
 
           fetch_symbols.each do |symbol, s_hash|
-            next if symbol.nil?
-            next if s_hash['disabled'] != 0 || s_hash['delisted'] != 0 || s_hash['frozen'] != 0
+            next unless symbol.present? && s_hash['frozen'] == 0
+            next unless s_hash['disabled'] == 0 && s_hash['delisted'] == 0
 
             symbols << symbol
           end
@@ -39,14 +39,13 @@ module ExchangeWrapper
         def trading_pairs
           trading_pairs = []
 
-          fetch_prices.each do |symbol, tp_hash|
-            next if symbol.nil? || tp_hash['isFrozen'] != "0"
-            assets = symbol.split('_')
+          fetch_metadata.each do |md_hash|
+            assets = md_hash['symbol'].split('/')
 
             trading_pairs << [
-              "#{assets[1]}/#{assets[0]}",
-              assets[1],
-              assets[0]
+              md_hash['symbol'],
+              assets[0],
+              assets[1]
             ]
           end
 
@@ -59,13 +58,12 @@ module ExchangeWrapper
         def prices
           prices = []
 
-          fetch_prices.each do |symbol, tp_hash|
-            next if symbol.nil? || tp_hash['last'].nil? || tp_hash['isFrozen'] != "0"
-            assets = symbol.split('_')
+          fetch_metadata.each do |md_hash|
+            next unless md_hash['last'].present?
 
             prices << {
-              'symbol' => "#{assets[1]}/#{assets[0]}",
-              'price' => tp_hash['last']
+              'symbol' => md_hash['symbol'],
+              'price' => md_hash['last']
             }
           end
 
@@ -73,16 +71,24 @@ module ExchangeWrapper
         end
 
         def metadata
-          metadata = []
+          fetch_metadata
+        end
 
-          fetch_prices.each do |symbol, tp_hash|
-            next if symbol.nil? || tp_hash['isFrozen'] != "0"
-            assets = symbol.split('_')
+        def volume
+          volume = []
 
-            metadata << tp_hash.merge('symbol' => "#{assets[1]}/#{assets[0]}")
+          fetch_metadata.each do |md_hash|
+            next unless md_hash['baseVolume'].present? && md_hash['quoteVolume'].present?
+            # confusing... poloniex uses the opposite naming convention
+            # so quote/base used for base/quote
+            volume << {
+              'symbol' => md_hash['symbol'],
+              'base_volume' => md_hash['quoteVolume'],
+              'quote_volume' => md_hash['baseVolume']
+            }
           end
 
-          metadata
+          volume
         end
 
         private
@@ -97,14 +103,24 @@ module ExchangeWrapper
           end
         end
 
-        def fetch_prices
+        def fetch_metadata
+          metadata = []
+
           if defined?(::Rails)
             ::Rails.cache.fetch('ExchangeWrapper/poloniex-public-api-tickers', expires_in: 30.seconds) do
               ::ExchangeWrapper::Poloniex::PublicApi.tickers
             end
           else
             ::ExchangeWrapper::Poloniex::PublicApi.tickers
+          end.each do |symbol, md_hash|
+            next unless symbol.present? && md_hash['isFrozen'] == "0"
+            assets = symbol.to_s.split('_')
+            next unless assets[0].present? && assets[1].present?
+
+            metadata << md_hash.merge('symbol' => "#{assets[1]}/#{assets[0]}")
           end
+
+          metadata
         end
 
       end
