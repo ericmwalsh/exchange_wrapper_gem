@@ -24,14 +24,9 @@ module ExchangeWrapper
         def symbols
           symbols = []
 
-          fetch_trading_pairs.each do |tp|
-            next unless tp.present?
-            assets = tp.split('_')
-            base_asset = assets[0].to_s.upcase
-            quote_asset = assets[1].to_s.upcase
-
-            symbols << base_asset if base_asset.present?
-            symbols << quote_asset if quote_asset.present?
+          fetch_trading_pairs.each do |tp_hash|
+            symbols << tp_hash['base_asset']
+            symbols << tp_hash['quote_asset']
           end
 
           symbols.sort!.uniq!
@@ -42,17 +37,11 @@ module ExchangeWrapper
         def trading_pairs
           trading_pairs = []
 
-          fetch_trading_pairs.each do |tp|
-            next unless tp.present?
-            assets = tp.split('_')
-            base_asset = assets[0].to_s.upcase
-            quote_asset = assets[1].to_s.upcase
-            next unless base_asset.present? && quote_asset.present?
-
+          fetch_trading_pairs.each do |tp_hash|
             trading_pairs << [
-              "#{base_asset}/#{quote_asset}",
-              base_asset,
-              quote_asset
+              tp_hash['symbol'],
+              tp_hash['base_asset'],
+              tp_hash['quote_asset']
             ]
           end
 
@@ -65,16 +54,11 @@ module ExchangeWrapper
         def prices
           prices = []
 
-          fetch_prices.each do |tp, tp_hash|
-            next unless tp.present? && tp_hash['last'].present?
-            assets = tp.split('_')
-            base_asset = assets[0].to_s.upcase
-            quote_asset = assets[1].to_s.upcase
-            next unless base_asset.present? && quote_asset.present?
-
+          fetch_metadata.each do |md_hash|
+            next unless md_hash['last'].present?
             prices << {
-              'symbol' => "#{base_asset}/#{quote_asset}",
-              'price' => tp_hash['last']
+              'symbol' => md_hash['symbol'],
+              'price' => md_hash['last']
             }
           end
 
@@ -82,19 +66,24 @@ module ExchangeWrapper
         end
 
         def metadata
-          metadata = []
+          fetch_metadata
+        end
 
-          fetch_prices.each do |tp, tp_hash|
-            next unless tp.present?
-            assets = tp.split('_')
-            base_asset = assets[0].to_s.upcase
-            quote_asset = assets[1].to_s.upcase
-            next unless base_asset.present? && quote_asset.present?
+        def volume
+          volume = []
 
-            metadata << tp_hash.merge('symbol' => "#{base_asset}/#{quote_asset}")
+          fetch_metadata.each do |md_hash|
+            next unless md_hash['baseVolume'].present? && md_hash['quoteVolume'].present?
+            # confusing... gateio refers to the opposite symbols
+            # so quote/base instead of base/quote
+            volume << {
+              'symbol' => md_hash['symbol'],
+              'base_volume' => md_hash['quoteVolume'],
+              'quote_volume' => md_hash['baseVolume']
+            }
           end
 
-          metadata
+          volume
         end
 
         private
@@ -106,17 +95,42 @@ module ExchangeWrapper
             end
           else
             ::ExchangeWrapper::Gateio::PublicApi.pairs
-          end
+          end.map do |tp|
+            assets = tp.to_s.split('_')
+            if tp.present? && assets[0].present? && assets[1].present?
+              base_asset = assets[0].to_s.upcase
+              quote_asset = assets[1].to_s.upcase
+              {
+                'symbol' => "#{base_asset}/#{quote_asset}",
+                'base_asset' => base_asset,
+                'quote_asset' => quote_asset
+              }
+            else
+              nil
+            end
+          end.compact
         end
 
-        def fetch_prices
+        def fetch_metadata
+          metadata = []
+
           if defined?(::Rails)
             ::Rails.cache.fetch('ExchangeWrapper/gateio-public-api-tickers', expires_in: 30.seconds) do
               ::ExchangeWrapper::Gateio::PublicApi.tickers
             end
           else
             ::ExchangeWrapper::Gateio::PublicApi.tickers
+          end.each do |tp, md_hash|
+            assets = tp.to_s.split('_')
+            if tp.present? && assets[0].present? && assets[1].present?
+              base_asset = assets[0].to_s.upcase
+              quote_asset = assets[1].to_s.upcase
+
+              metadata << md_hash.merge('symbol' => "#{base_asset}/#{quote_asset}")
+            end
           end
+
+          metadata
         end
 
       end
