@@ -26,7 +26,7 @@ module ExchangeWrapper
           symbols = []
 
           fetch_symbols.each do |symbol_hash|
-            next if symbol_hash['coin'].nil?
+            next unless symbol_hash['coin'].present?
             symbols << symbol_hash['coin']
           end
 
@@ -38,15 +38,11 @@ module ExchangeWrapper
         def trading_pairs
           trading_pairs = []
 
-          fetch_prices.each do |tp_hash|
-            base_asset = tp_hash['coinType']
-            quote_asset = tp_hash['coinTypePair']
-            next if base_asset.nil? || quote_asset.nil? || !tp_hash['trading']
-
+          fetch_metadata.each do |md_hash|
             trading_pairs << [
               "#{base_asset}/#{quote_asset}",
-              base_asset,
-              quote_asset
+              md_hash['coinType'],
+              md_hash['coinTypePair']
             ]
           end
 
@@ -59,15 +55,12 @@ module ExchangeWrapper
         def prices
           prices = []
 
-          fetch_prices.each do |tp_hash|
-            base_asset = tp_hash['coinType']
-            quote_asset = tp_hash['coinTypePair']
-            next if base_asset.nil? || quote_asset.nil? || !tp_hash['trading']
-            next if tp_hash['lastDealPrice'].nil?
+          fetch_metadata.each do |md_hash|
+            next unless md_hash['lastDealPrice'].present?
 
             prices << {
-              'symbol' => "#{base_asset}/#{quote_asset}",
-              'price' => tp_hash['lastDealPrice']
+              'symbol' => md_hash['symbol'],
+              'price' => md_hash['lastDealPrice']
             }
           end
 
@@ -75,17 +68,23 @@ module ExchangeWrapper
         end
 
         def metadata
-          metadata = []
+          fetch_metadata
+        end
 
-          fetch_prices.each do |tp_hash|
-            base_asset = tp_hash['coinType']
-            quote_asset = tp_hash['coinTypePair']
-            next if base_asset.nil? || quote_asset.nil? || !tp_hash['trading']
+        def volume
+          volume = []
 
-            metadata << tp_hash.merge('symbol' => "#{base_asset}/#{quote_asset}")
+          fetch_metadata.each do |md_hash|
+            next unless md_hash['vol'].present? && md_hash['volValue'].present?
+
+            volume << {
+              'symbol' => md_hash['symbol'],
+              'base_volume' => md_hash['vol'],
+              'quote_volume' => md_hash['volValue']
+            }
           end
 
-          metadata
+          volume
         end
 
         private
@@ -100,14 +99,22 @@ module ExchangeWrapper
           end['data']
         end
 
-        def fetch_prices
+        def fetch_metadata
           if defined?(::Rails)
             ::Rails.cache.fetch('ExchangeWrapper/kucoin-public-api-get-markets', expires_in: 30.seconds) do
               ::ExchangeWrapper::Kucoin::PublicApi.trading_symbols_tick
             end
           else
             ::ExchangeWrapper::Kucoin::PublicApi.trading_symbols_tick
-          end['data']
+          end['data'].map do |md_hash|
+            base_asset = md_hash['coinType']
+            quote_asset = md_hash['coinTypePair']
+            if base_asset.present? && quote_asset.present? && md_hash['trading']
+              md_hash.merge('symbol' => "#{base_asset}/#{quote_asset}")
+            else
+              nil
+            end
+          end.compact
         end
 
       end
